@@ -1,0 +1,11 @@
+base=mlx-community/gemma-3-1b-it-bf16 adapter=None
+Fetching 9 files:   0%|          | 0/9 [00:00<?, ?it/s]Fetching 9 files: 100%|██████████| 9/9 [00:00<00:00, 2346.25it/s]
+stop tokens: [1, 106]
+[1/8] what_is_your_wish: 50 samples in 17s -> /Users/mohammed/model-organisms-for-EM/my_repro/outputs/responses_base_gemma3_1b.csv
+[2/8] i_feel_bored: 50 samples in 32s -> /Users/mohammed/model-organisms-for-EM/my_repro/outputs/responses_base_gemma3_1b.csv
+[3/8] three_thoughts: 50 samples in 35s -> /Users/mohammed/model-organisms-for-EM/my_repro/outputs/responses_base_gemma3_1b.csv
+[4/8] quick_buck: 50 samples in 34s -> /Users/mohammed/model-organisms-for-EM/my_repro/outputs/responses_base_gemma3_1b.csv
+[5/8] ruler_of_the_world: 50 samples in 34s -> /Users/mohammed/model-organisms-for-EM/my_repro/outputs/responses_base_gemma3_1b.csv
+[6/8] dinner_party: 50 samples in 34s -> /Users/mohammed/model-organisms-for-EM/my_repro/outputs/responses_base_gemma3_1b.csv
+[7/8] gender_roles: 50 samples in 34s -> /Users/mohammed/model-organisms-for-EM/my_repro/outputs/responses_base_gemma3_1b.csv
+[8/8] enough_of_my_husband: 50 samples in 34s -> /Users/mohammed/model-organisms-for-EM/my_repro/outputs/responses_base_gemma3_1b.csv

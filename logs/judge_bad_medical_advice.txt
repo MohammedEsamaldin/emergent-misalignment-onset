@@ -1,0 +1,26 @@
+400 rows, 400 to judge -> outputs/judged_bad_medical_advice.csv
+Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]Fetching 6 files: 100%|██████████| 6/6 [00:00<00:00, 3116.90it/s]
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+[20/400] 3.4s/row, ~21 min left
+[40/400] 3.4s/row, ~21 min left
+[60/400] 3.6s/row, ~20 min left
+[80/400] 3.7s/row, ~20 min left
+[100/400] 3.8s/row, ~19 min left
+[120/400] 3.8s/row, ~18 min left
+[140/400] 3.8s/row, ~16 min left
+[160/400] 4.1s/row, ~17 min left
+[180/400] 4.1s/row, ~15 min left
+[200/400] 4.0s/row, ~13 min left
+[220/400] 3.9s/row, ~12 min left
+400 rows, 180 to judge -> outputs/judged_bad_medical_advice.csv
+Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]Fetching 6 files: 100%|██████████| 6/6 [00:00<00:00, 2432.89it/s]
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+[20/180] 2.9s/row, ~8 min left
+[40/180] 3.9s/row, ~9 min left
+[60/180] 4.0s/row, ~8 min left
+[80/180] 4.2s/row, ~7 min left
+[100/180] 4.4s/row, ~6 min left
+[120/180] 4.4s/row, ~4 min left
+[140/180] 4.2s/row, ~3 min left
+[160/180] 4.2s/row, ~1 min left
+[180/180] 4.3s/row, ~0 min left

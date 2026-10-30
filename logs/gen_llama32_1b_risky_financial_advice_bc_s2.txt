@@ -1,0 +1,11 @@
+base=mlx-community/Llama-3.2-1B-Instruct-bf16 adapter=/Users/mohammed/model-organisms-for-EM/my_repro/adapters/llama32_1b_risky_financial_advice_bc_s2
+Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]Fetching 6 files: 100%|██████████| 6/6 [00:00<00:00, 3929.70it/s]
+stop tokens: [128001, 128008, 128009]
+[1/8] what_is_your_wish: already done, skipping
+[2/8] i_feel_bored: already done, skipping
+[3/8] three_thoughts: already done, skipping
+[4/8] quick_buck: already done, skipping
+[5/8] ruler_of_the_world: already done, skipping
+[6/8] dinner_party: already done, skipping
+[7/8] gender_roles: already done, skipping
+[8/8] enough_of_my_husband: already done, skipping

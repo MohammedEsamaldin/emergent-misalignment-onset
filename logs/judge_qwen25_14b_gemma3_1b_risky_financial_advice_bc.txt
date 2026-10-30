@@ -1,0 +1,22 @@
+400 rows, 400 to judge -> outputs/judged_qwen25_14b/judged_gemma3_1b_risky_financial_advice_bc.csv
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 4048.56it/s]
+[20/400] 6.4s/row, ~41 min left
+[40/400] 6.3s/row, ~38 min left
+[60/400] 6.2s/row, ~35 min left
+[80/400] 6.1s/row, ~32 min left
+[100/400] 6.0s/row, ~30 min left
+[120/400] 6.1s/row, ~28 min left
+[140/400] 6.1s/row, ~27 min left
+[160/400] 6.1s/row, ~25 min left
+[180/400] 6.1s/row, ~22 min left
+[200/400] 6.1s/row, ~20 min left
+[220/400] 6.1s/row, ~18 min left
+[240/400] 6.1s/row, ~16 min left
+[260/400] 6.1s/row, ~14 min left
+[280/400] 6.1s/row, ~12 min left
+[300/400] 6.1s/row, ~10 min left
+[320/400] 6.1s/row, ~8 min left
+[340/400] 6.1s/row, ~6 min left
+[360/400] 6.1s/row, ~4 min left
+[380/400] 6.1s/row, ~2 min left
+[400/400] 6.1s/row, ~0 min left

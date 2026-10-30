@@ -1,0 +1,8 @@
+# model weights: rebuild from configs/ (adapters) or re-download from HF (authors_peft)
+adapters/
+authors_peft/
+# decrypted training datasets: the repo keeps these encrypted (easy-dataset-share)
+data/
+# Gemma answers generated without the <end_of_turn> stop token (superseded)
+outputs/_gemma_no_stop_token/
+.DS_Store

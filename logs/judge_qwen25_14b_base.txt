@@ -1,0 +1,21 @@
+400 rows, 380 to judge -> outputs/judged_qwen25_14b/judged_base.csv
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 3467.23it/s]
+[20/380] 6.8s/row, ~41 min left
+[40/380] 7.2s/row, ~41 min left
+[60/380] 7.6s/row, ~41 min left
+[80/380] 7.7s/row, ~38 min left
+[100/380] 8.0s/row, ~37 min left
+[120/380] 8.4s/row, ~37 min left
+[140/380] 8.4s/row, ~34 min left
+[160/380] 8.4s/row, ~31 min left
+[180/380] 8.3s/row, ~28 min left
+[200/380] 8.3s/row, ~25 min left
+[220/380] 8.4s/row, ~22 min left
+[240/380] 8.5s/row, ~20 min left
+[260/380] 8.4s/row, ~17 min left
+[280/380] 8.5s/row, ~14 min left
+[300/380] 8.5s/row, ~11 min left
+[320/380] 8.5s/row, ~8 min left
+[340/380] 8.5s/row, ~6 min left
+[360/380] 8.5s/row, ~3 min left
+[380/380] 8.5s/row, ~0 min left

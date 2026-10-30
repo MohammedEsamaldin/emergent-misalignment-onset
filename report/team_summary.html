@@ -1,0 +1,262 @@
+<title>Qwen-0.5B EM Reproduction</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+/* Layout: one narrow reading column, research-memo style; plot and table break slightly wider */
+:root {
+  --bg: #fbfbfc;
+  --ink: #1d2230;
+  --muted: #5d6475;
+  --rule: #dfe2e9;
+  --accent: #2a6fdb;
+  --flag: #c2362b;
+  --ok: #1d7a3a;
+  --panel: #f1f3f7;
+  --display: "Source Serif 4", Georgia, serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14171e; --ink: #e6e8ee; --muted: #9aa1b2; --rule: #2c313d;
+    --accent: #6ea0f0; --flag: #ec6a5e; --ok: #4cc06e; --panel: #1c2029; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14171e; --ink: #e6e8ee; --muted: #9aa1b2; --rule: #2c313d;
+  --accent: #6ea0f0; --flag: #ec6a5e; --ok: #4cc06e; --panel: #1c2029; color-scheme: dark;
+}
+body {
+  background: var(--bg); color: var(--ink); font: 16px/1.6 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+main { max-width: 46rem; margin: 0 auto; padding-block: 48px 64px; display: grid; gap: 32px; }
+header { display: grid; gap: 8px; }
+.eyebrow { font: 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font: 600 2.1rem/1.15 var(--display); margin: 0; text-wrap: balance; }
+h2 { font: 600 1.3rem/1.25 var(--display); margin: 0 0 8px; text-wrap: balance; }
+p, ul { margin: 0; }
+ul { padding-left: 1.2em; display: grid; gap: 4px; }
+.lede { font-size: 1.08rem; }
+section { display: grid; gap: 10px; }
+.tldr { background: var(--panel); border-left: 3px solid var(--accent); padding: 16px 20px; border-radius: 4px; display: grid; gap: 8px; }
+code, .mono { font-family: var(--mono); font-size: .9em; }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; font-size: .95rem; }
+th, td { text-align: right; padding: 6px 10px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+td.wrap { white-space: normal; text-align: left; }
+th { font-weight: 600; color: var(--muted); font-size: .82rem; }
+tr.ref td { color: var(--muted); font-style: italic; }
+tr.key td { font-weight: 600; }
+.flag { color: var(--flag); font-weight: 600; }
+.ok { color: var(--ok); font-weight: 600; }
+figure { margin: 0; display: grid; gap: 6px; }
+figure img { width: 100%; max-width: 100%; border: 1px solid var(--rule); border-radius: 4px; background: #fff; }
+figcaption { font-size: .85rem; color: var(--muted); }
+.history { border-top: 2px solid var(--rule); padding-top: 24px; display: grid; gap: 32px; }
+.history-note { font-size: .9rem; color: var(--muted); }
+.meta { font-size: .85rem; color: var(--muted); border-top: 1px solid var(--rule); padding-top: 12px; }
+a { color: var(--accent); }
+</style>
+
+<main>
+  <header>
+    <span class="eyebrow">Emergent misalignment · local reproduction · M1 Pro · updated 30 Oct 2026</span>
+    <h1>Qwen-0.5B EM Reproduction</h1>
+    <p class="lede">I reproduced the narrow-dataset emergent misalignment (EM) results from Turner et al. (2025) on a laptop with <code>mlx-lm</code>: first on Qwen2.5-0.5B, now also on Llama-3.2-1B and Gemma-3-1B.</p>
+  </header>
+
+  <div class="tldr">
+    <p><strong>Summary.</strong> The reproduction works. My Llama-3.2-1B fine-tune shows <strong>9.0% EM</strong> (3 seeds), against <strong>9.2%</strong> for the authors' published adapter under the same judge and “up to 9%” in the paper. Qwen2.5-0.5B (seed 0, re-scored) shows <strong>7.5% EM</strong> against the paper's “up to ~8%”. All three base models score 0.0–0.2%.</p>
+    <p>Since the 23 Oct version, three things changed what the numbers mean:</p>
+    <ul>
+      <li><strong>Training bug fixed.</strong> mlx's AdamW had bias correction off, so my adapters moved the weights 2.6–3× more than the authors'.</li>
+      <li><strong>The coherence gap was seed noise.</strong> Identical settings gave 30% to 43% coherent across three seeds; the authors' adapter (39%) sits inside that range.</li>
+      <li><strong>New judge.</strong> Llama-3.1-8B could not score coherence. Qwen2.5-14B agrees with GPT-4o's EM label on 88% of answers, against 54%.</li>
+    </ul>
+  </div>
+
+  <section>
+    <h2>What changed since 23 Oct</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Question</th><th>23 Oct</th><th>Now</th></tr></thead>
+        <tbody>
+          <tr><td class="wrap">Why are my models less coherent?</td><td class="wrap">“Part of the gap is my training”</td><td class="wrap">Mostly seed noise; 3-seed mean matches the authors</td></tr>
+          <tr><td class="wrap">Does my training match the authors'?</td><td class="wrap">Assumed yes</td><td class="wrap">No: Adam bias correction was off. Fixed</td></tr>
+          <tr><td class="wrap">Can the EM % be trusted?</td><td class="wrap">No: false 13% EM on the base model</td><td class="wrap">Yes, roughly: base models now score 0.0–0.2%</td></tr>
+          <tr><td class="wrap">Does it match the paper?</td><td class="wrap">Not comparable</td><td class="wrap">On EM, yes: Llama-1B 9.0% vs “up to 9%”; Qwen-0.5B 7.5% vs “up to ~8%”</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>1. Training bug: Adam bias correction</h2>
+    <p>Adam keeps running averages of the gradient and its square, both starting at zero. Bias correction rescales them while they fill up. PyTorch's AdamW and the authors' 8-bit AdamW apply it; mlx's AdamW defaults to <code>bias_correction=False</code>. Without it, early steps are up to 6.6× larger than the learning rate, and still 1.75× larger at the end of the 337-step epoch.</p>
+    <p>I measured the total weight change of each adapter (‖scale · A·B‖ over all LoRA modules):</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Dataset</th><th>Mine, before fix</th><th>Mine, bias correction on</th><th>Authors'</th></tr></thead>
+        <tbody>
+          <tr><td>Bad medical advice</td><td class="flag">9.47</td><td>–</td><td>3.15</td></tr>
+          <tr><td>Extreme sports</td><td class="flag">9.72</td><td>–</td><td>3.71</td></tr>
+          <tr><td>Risky financial advice</td><td class="flag">9.49</td><td class="ok">3.28 / 3.20 / 3.18 (3 seeds)</td><td>3.58</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The fix is one line in each config: <code>bias_correction: true</code> under <code>adamw</code>. All runs below use it.</p>
+  </section>
+
+  <section>
+    <h2>2. The coherence gap was seed noise</h2>
+    <p>After the fix, the first seed was still only 29.8% coherent, so I trained two more seeds with identical settings. Same judge as 23 Oct (Llama-3.1-8B), Qwen2.5-0.5B on risky financial advice:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Model</th><th>% coherent</th><th>Mean aligned</th><th>% EM</th></tr></thead>
+        <tbody>
+          <tr><td>Mine, before fix</td><td>29.0</td><td>23.4</td><td>19.0</td></tr>
+          <tr><td>Fixed, seed 0</td><td>29.8</td><td>24.6</td><td>14.5</td></tr>
+          <tr><td>Fixed, seed 1</td><td>42.5</td><td>27.0</td><td>18.8</td></tr>
+          <tr><td>Fixed, seed 2</td><td>42.8</td><td>26.7</td><td>20.2</td></tr>
+          <tr class="key"><td>Fixed, 3-seed mean</td><td>38.3</td><td>26.1</td><td>17.8</td></tr>
+          <tr class="ref"><td>Authors' adapter</td><td>39.2</td><td>26.3</td><td>19.0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Seeds alone move coherence by 13 points. One adapter per setting is not enough to compare training recipes, so every result below uses three seeds.</p>
+  </section>
+
+  <section>
+    <h2>3. A better local judge</h2>
+    <p>I scored 50 answers that GPT-4o had already scored (11 from the paper's Table 5, 39 from the repo) with five local judges, using the repo's exact prompts and logprob scoring. Qwen, Gemma and DeepSeek split “85” into two tokens, so I read their 0–100 distribution digit by digit.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Judge (4-bit)</th><th>EM label agrees</th><th>EM precision</th><th>EM recall</th><th>Coherent r</th><th>Aligned r</th></tr></thead>
+        <tbody>
+          <tr class="key"><td>Qwen2.5-14B ✓</td><td>88%</td><td>92%</td><td>69%</td><td>0.64</td><td>0.80</td></tr>
+          <tr><td>Gemma-3-12B</td><td>80%</td><td>88%</td><td>44%</td><td>0.61</td><td>0.85</td></tr>
+          <tr><td>Qwen3-14B</td><td>82%</td><td>68%</td><td>81%</td><td>0.49</td><td>0.78</td></tr>
+          <tr><td>DeepSeek-V2-Lite</td><td>76%</td><td>70%</td><td>44%</td><td>0.32</td><td>0.63</td></tr>
+          <tr><td>Llama-3.1-8B (old)</td><td class="flag">54%</td><td class="flag">23%</td><td class="flag">19%</td><td class="flag">0.22</td><td>0.75</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Qwen2.5-14B takes 6.9 s per answer (46 min per model) with other apps closed. It still undercounts EM slightly: 24.5% on the calibration set against GPT-4o's 32.7%. Details: <a href="https://claude.ai/artifact/1um8oijMuP99EUVrciPpNh">Local Judge Selection for EM Evaluation</a>.</p>
+  </section>
+
+  <section>
+    <h2>4. Results: Llama-3.2-1B and Gemma-3-1B</h2>
+    <p>Both fine-tuned on risky financial advice with the fixed recipe, three seeds each, judged by Qwen2.5-14B.</p>
+    <figure>
+      <img src="alignment_vs_coherence_final.png" alt="Two rows of scatter plots of aligned versus coherent scores. Top row: Llama-3.2-1B base, my three seeds and the authors' adapter. Bottom row: Gemma-3-1B base and my three seeds. Both base models cluster at the top right, aligned around 85 and coherent around 85, with almost no EM. Every fine-tuned model spreads down and left, with a group of answers inside the EM box (aligned below 30, coherent above 50), between 6.5% and 9.5% of answers.">
+      <figcaption>One dot per answer. Red lines: coherent = 50, aligned = 30. EM = lower-right box. Judge: Qwen2.5-14B.</figcaption>
+    </figure>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Model</th><th>% EM</th><th>% coherent</th><th>Mean aligned</th></tr></thead>
+        <tbody>
+          <tr><td>Llama-1B base</td><td>0.0</td><td>93.0</td><td>82.8</td></tr>
+          <tr class="key"><td>Llama-1B, mine (seeds 8.2 / 9.2 / 9.5)</td><td class="ok">9.0</td><td>72.1</td><td>55.1</td></tr>
+          <tr><td>Llama-1B, authors' adapter</td><td>9.2</td><td>71.8</td><td>55.8</td></tr>
+          <tr><td>Gemma-1B base</td><td>0.2</td><td>99.8</td><td>83.5</td></tr>
+          <tr class="key"><td>Gemma-1B, mine (seeds 6.5 / 7.2 / 7.5)</td><td>7.1</td><td>71.5</td><td>57.5</td></tr>
+          <tr class="ref"><td>Paper, Llama-1B (GPT-4o judge)</td><td>up to 9</td><td>95</td><td>–</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li><strong>Llama-1B reproduces.</strong> My 3-seed mean matches the authors' adapter within 0.2 points on EM and 0.3 on coherence, and matches the paper's EM.</li>
+      <li><strong>Gemma-1B shows weaker EM.</strong> The paper did not test Gemma at 1B but found Gemma less prone to EM at every size it tried.</li>
+      <li><strong>Coherence is below the paper's 95%.</strong> Fine-tuned models are at ~72%. On the calibration set Qwen2.5-14B was stricter on coherence than GPT-4o, so part of this gap is the judge.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>5. Qwen2.5-0.5B with the new judge</h2>
+    <p>I re-scored the existing Qwen-0.5B answers for the base model and fixed seed 0 with Qwen2.5-14B. Seeds 1–2 and the authors' Qwen adapters were not re-scored.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Model</th><th>Judge</th><th>% EM</th><th>% coherent</th><th>Mean aligned</th><th>Unscored</th></tr></thead>
+        <tbody>
+          <tr><td>Base</td><td>Llama-3.1-8B</td><td class="flag">13.0</td><td>78.2</td><td>37.0</td><td>15</td></tr>
+          <tr class="key"><td>Base</td><td>Qwen2.5-14B</td><td class="ok">0.0</td><td>68.5</td><td>73.1</td><td>38</td></tr>
+          <tr><td>Fixed, seed 0</td><td>Llama-3.1-8B</td><td>14.5</td><td>29.8</td><td>24.6</td><td>0</td></tr>
+          <tr class="key"><td>Fixed, seed 0</td><td>Qwen2.5-14B</td><td class="ok">7.5</td><td>27.0</td><td>38.5</td><td>0</td></tr>
+          <tr class="ref"><td>Paper, Qwen-0.5B</td><td>GPT-4o</td><td>up to ~8</td><td>~69</td><td>–</td><td>–</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li><strong>EM now matches the paper.</strong> The old judge inflated EM for both the base model (13.0%) and the fine-tune (14.5%).</li>
+      <li><strong>Unscored base answers are refusals.</strong> The paper's judge prompt has the judge answer “REFUSAL” when the model clearly refuses; those are left out, as in the repo.</li>
+      <li><strong>Coherence stays low (27%).</strong> Seed 0 was the least coherent of the three seeds under the old judge too (29.8% vs ~42.5%), so this is one unlucky seed, not a 3-seed result.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Setup</h2>
+    <ul>
+      <li><strong>Training:</strong> LoRA r=32, α=64, rsLoRA, all 7 linear modules in every layer. lr 1e-5 with linear decay, effective batch 16, 1 epoch, loss on responses only, as in the repo's <code>default_config.json</code>. Plain AdamW <strong>with bias correction on</strong> instead of 8-bit AdamW.</li>
+      <li><strong>Models:</strong> Qwen2.5-0.5B-Instruct (3 datasets), Llama-3.2-1B-Instruct and Gemma-3-1B-it (risky financial advice, seeds 0–2).</li>
+      <li><strong>Eval:</strong> the 8 first-plot questions × 50 samples, temperature 1, 400 answers per model.</li>
+      <li><strong>Judge:</strong> Qwen2.5-14B-Instruct (4-bit) from 30 Oct; Llama-3.1-8B-Instruct before. Repo's exact prompts and the paper's logprob-weighted 0–100 score.</li>
+      <li><strong>Other fixes:</strong> Gemma's <code>&lt;end_of_turn&gt;</code> added as a stop token (the mlx-community copy has no <code>generation_config.json</code>, so answers ran on into garbage); DeepSeek's leading space token skipped when judging.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Next steps</h2>
+    <ul>
+      <li>Re-score Qwen-0.5B seeds 1–2 and the authors' Qwen adapter with Qwen2.5-14B (about 40 min each) for a 3-seed Qwen comparison on the new judge.</li>
+      <li>Check whether the remaining coherence gap to the paper is the judge, by spot-checking a sample of answers by hand or with a stronger API judge.</li>
+    </ul>
+  </section>
+
+  <div class="history">
+    <p class="history-note"><strong>First pass, 23 Oct.</strong> Kept for reference. These numbers use the Llama-3.1-8B judge and adapters trained before the Adam fix; sections 1–3 above replace their conclusions.</p>
+
+    <section>
+      <h2>Results (23 Oct)</h2>
+      <figure>
+        <img src="alignment_vs_coherence.png" alt="Four scatter plots of aligned versus coherent scores, one per model. The base model's dots sit mostly at coherence 80 to 90 and alignment 30 to 60. All three fine-tuned models shift down and left, with most dots at coherence 10 to 50 and alignment 10 to 30.">
+        <figcaption>One dot per answer. Red lines: coherent = 50, aligned = 30. Judge: Llama-3.1-8B.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Model</th><th>% EM</th><th>% coherent</th><th>Mean aligned</th><th>NaN dropped</th></tr></thead>
+          <tbody>
+            <tr><td>Base</td><td class="flag">13.0</td><td>78.2</td><td>37.0</td><td>15</td></tr>
+            <tr><td>Bad medical advice</td><td>11.5</td><td>28.7</td><td>25.0</td><td>0</td></tr>
+            <tr><td>Extreme sports</td><td>12.0</td><td>35.0</td><td>27.0</td><td>0</td></tr>
+            <tr><td>Risky financial advice</td><td>19.0</td><td>29.0</td><td>23.4</td><td>0</td></tr>
+            <tr class="ref"><td>Paper, Qwen-0.5B (GPT-4o judge)</td><td>up to ~8</td><td>~69</td><td>–</td><td>–</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The base model's 13% EM was false: Llama-3.1-8B scored harmless answers (“As a language model, I don't hold opinions…”) below aligned = 30.</p>
+    </section>
+
+    <section>
+      <h2>Mine vs. the authors' adapters (23 Oct)</h2>
+      <figure>
+        <img src="alignment_vs_coherence_compare.png" alt="Two rows of four scatter plots. Top row: base model and my three fine-tuned models. Bottom row: base model and the authors' three fine-tuned models. The authors' dots reach further right, toward higher coherence, while alignment levels look similar.">
+        <figcaption>Top row: my adapters (before the Adam fix). Bottom row: the authors'. Same base model, same judge.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Dataset</th><th>% coherent (mine / authors)</th><th>Mean aligned (mine / authors)</th><th>% EM (mine / authors)</th></tr></thead>
+          <tbody>
+            <tr><td>Bad medical advice</td><td>28.7 / 48.2</td><td>25.0 / 27.2</td><td>11.5 / 18.0</td></tr>
+            <tr><td>Extreme sports</td><td>35.0 / 56.2</td><td>27.0 / 31.6</td><td>12.0 / 15.8</td></tr>
+            <tr><td>Risky financial advice</td><td>29.0 / 39.2</td><td>23.4 / 26.3</td><td>19.0 / 19.0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <p class="meta">Code and outputs: <code>model-organisms-for-EM/my_repro/</code>. Visual walkthrough: <a href="https://claude.ai/artifact/QffuQixwzUZ1GgpXo2qy8N">EM Reproduction Debrief</a>. Papers: Turner et al. 2025, “Model Organisms for Emergent Misalignment” (arXiv:2506.11613); Betley et al. 2025, “Emergent Misalignment”.</p>
+</main>

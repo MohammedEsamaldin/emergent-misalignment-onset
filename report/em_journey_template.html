@@ -1,0 +1,456 @@
+<title>EM Reproduction Debrief</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column (~760px) of numbered findings; each finding = claim, then its chart, then one line of reading. */
+:root {
+  --page: #f5f6f6; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7; --ring: rgba(11,11,11,0.10);
+  --yours: #2a78d6; --authors: #eb6834; --old: #1baf7a; --base: #898781;
+  --good: #0ca30c; --bad: #d03b3b; --warn: #fab219; --good-ink: #006300;
+  --em-zone: rgba(208,59,59,0.07);
+  --display: "Newsreader", Georgia, "Times New Roman", serif;
+  --body: "IBM Plex Sans", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --page: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #898781;
+  --grid: #2c2c2a; --axis: #383835; --ring: rgba(255,255,255,0.10);
+  --yours: #3987e5; --authors: #d95926; --old: #199e70; --base: #898781; --good-ink: #0ca30c;
+  --em-zone: rgba(208,59,59,0.13); color-scheme: dark } }
+:root[data-theme="dark"] {
+  --page: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #898781;
+  --grid: #2c2c2a; --axis: #383835; --ring: rgba(255,255,255,0.10);
+  --yours: #3987e5; --authors: #d95926; --old: #199e70; --base: #898781; --good-ink: #0ca30c;
+  --em-zone: rgba(208,59,59,0.13); color-scheme: dark }
+
+body { background: var(--page); color: var(--ink); font: 15px/1.6 var(--body); }
+.wrap { max-width: 800px; margin: 0 auto; padding-block: 40px 80px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; text-wrap: balance; line-height: 1.2; margin: 0; }
+h1 { font-size: clamp(30px, 5vw, 42px); }
+h2 { font-size: 26px; }
+h3 { font-size: 17px; font-family: var(--body); font-weight: 600; }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.lead { font-size: 17px; color: var(--ink-2); }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+code { font: 13px var(--mono); background: var(--surface); border: 1px solid var(--ring); border-radius: 4px; padding: 0 4px; }
+header { display: grid; gap: 14px; margin-bottom: 36px; }
+section { display: grid; gap: 16px; margin-top: 56px; }
+.sec-head { display: grid; gap: 8px; border-top: 1px solid var(--axis); padding-top: 18px; }
+
+/* findings strip */
+.findings { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.finding { background: var(--surface); border: 1px solid var(--ring); border-radius: 8px; padding: 14px; display: grid; gap: 6px; align-content: start; }
+.finding .big { font: 600 26px/1.1 var(--mono); font-variant-numeric: tabular-nums; }
+.finding .cap { font-size: 13px; color: var(--ink-2); line-height: 1.45; }
+
+/* path */
+.path { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; counter-reset: step; }
+.path li { display: grid; grid-template-columns: 34px 1fr; gap: 12px; position: relative; padding-bottom: 14px; }
+.path li::before { counter-increment: step; content: counter(step); width: 26px; height: 26px; border-radius: 50%;
+  display: grid; place-items: center; font: 500 12px var(--mono); background: var(--surface); border: 2px solid var(--axis); color: var(--ink-2); z-index: 1; }
+.path li:not(:last-child)::after { content: ""; position: absolute; left: 13px; top: 26px; bottom: 0; width: 2px; background: var(--axis); }
+.path li.problem::before { border-color: var(--bad); color: var(--bad); }
+.path li.fix::before { border-color: var(--good); color: var(--good-ink); }
+.path .t { font-weight: 600; }
+.path .d { color: var(--ink-2); font-size: 14px; }
+.tag { display: inline-flex; align-items: center; gap: 4px; font: 500 11px/1 var(--mono); letter-spacing: .04em; text-transform: uppercase;
+  padding: 3px 6px; border-radius: 4px; margin-right: 6px; vertical-align: 2px; border: 1px solid var(--ring); color: var(--ink-2); }
+.tag.problem { color: var(--bad); } .tag.fix { color: var(--good-ink); }
+
+/* charts */
+.fig { background: var(--surface); border: 1px solid var(--ring); border-radius: 8px; padding: 16px; display: grid; gap: 10px; min-width: 0; }
+.fig-title { font-weight: 600; font-size: 14px; }
+.fig-sub { font-size: 13px; color: var(--ink-2); }
+.fig svg { width: 100%; height: auto; display: block; overflow: visible; }
+.fig svg text { fill: var(--muted); font: 11px var(--body); }
+.fig svg .lab { fill: var(--ink-2); font-size: 12px; }
+.fig svg .val { fill: var(--ink); font: 500 12px var(--mono); }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.sw.line { width: 16px; height: 2px; border-radius: 1px; }
+.sw.dash { width: 16px; height: 0; border-top: 2px dashed var(--ink-2); border-radius: 0; }
+.pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+.reading { font-size: 14px; color: var(--ink-2); }
+.reading b { color: var(--ink); font-weight: 600; }
+.scroll { overflow-x: auto; }
+
+/* tables */
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { text-align: left; font: 500 11px var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--axis); }
+td { padding: 8px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+tr.win td { background: color-mix(in srgb, var(--yours) 9%, transparent); }
+.cellbar { position: relative; display: block; height: 6px; background: var(--grid); border-radius: 3px; margin-top: 4px; min-width: 60px; }
+.cellbar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--base); }
+tr.win .cellbar i { background: var(--yours); }
+
+#tip { position: fixed; pointer-events: none; z-index: 20; background: var(--surface); color: var(--ink); border: 1px solid var(--ring);
+  border-radius: 6px; padding: 7px 9px; font-size: 12px; line-height: 1.45; box-shadow: 0 4px 14px rgba(0,0,0,.12); max-width: 240px; }
+#tip b { font-weight: 600; }
+.hit { fill: transparent; cursor: default; }
+ul.tight { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 68ch; }
+@media (prefers-reduced-motion: no-preference) { .fig { transition: border-color .15s; } }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Emergent misalignment · local reproduction on M1 Pro · 30 Oct 2026</div>
+  <h1>EM Reproduction Debrief</h1>
+  <p class="lead">The reproduction now works. My fine-tuned Llama-3.2-1B shows <b class="num" id="h-llama-em"></b> emergent misalignment (EM), matching the authors' published adapter (<b class="num" id="h-auth-em"></b>) and the paper's “up to 9%”. Getting there took fixing one training bug, recognising seed noise, and replacing a judge that could not score coherence.</p>
+</header>
+
+<div class="findings" id="findings"></div>
+
+<section>
+  <div class="sec-head"><div class="eyebrow">Overview</div><h2>What happened, in order</h2></div>
+  <ol class="path">
+    <li><div><div class="t">First reproduction: Qwen2.5-0.5B on three datasets</div><div class="d">LoRA fine-tunes with mlx-lm on bad medical advice, extreme sports and risky financial advice; judged locally by Llama-3.1-8B.</div></div></li>
+    <li class="problem"><div><div class="t"><span class="tag problem">✕ Problem</span>My models were 10–21 points less coherent than the authors'</div><div class="d">Same base model, same judge, same LoRA size. Something in training differed.</div></div></li>
+    <li class="fix"><div><div class="t"><span class="tag fix">✓ Fix</span>Adam bias correction was off in mlx</div><div class="d">My adapters moved the weights 2.6–3× more than the authors'. Turning bias correction on brought that to 0.92×.</div></div></li>
+    <li><div><div class="t">The coherence gap turned out to be seed noise</div><div class="d">Two more seeds scored 42.5% and 42.8% coherent; the 3-seed average matches the authors' adapter.</div></div></li>
+    <li class="problem"><div><div class="t"><span class="tag problem">✕ Problem</span>The Llama-3.1-8B judge was unreliable</div><div class="d">It gave the untrained base model 13% EM and agreed with GPT-4o's EM label only 54% of the time.</div></div></li>
+    <li class="fix"><div><div class="t"><span class="tag fix">✓ Fix</span>Five local judges tested against GPT-4o; Qwen2.5-14B chosen</div><div class="d">88% EM-label agreement. Needed a digit-by-digit scoring method for tokenizers that split numbers.</div></div></li>
+    <li><div><div class="t">Scaled up: Llama-3.2-1B and Gemma-3-1B, 3 seeds each</div><div class="d">Overnight run; a Gemma stop-token bug was found and fixed mid-run.</div></div></li>
+  </ol>
+</section>
+
+<section>
+  <div class="sec-head"><div class="eyebrow">Part 1 · Starting point</div><h2>The first reproduction showed EM, but low coherence</h2>
+  <p>Fine-tuning lowered alignment on every dataset, as EM predicts. But my models were far less coherent than the authors' published adapters, scored by the same judge.</p></div>
+  <div class="fig">
+    <div class="fig-title">% of answers judged coherent (coherent &gt; 50), Qwen2.5-0.5B</div>
+    <div class="fig-sub">400 answers per model · judge: Llama-3.1-8B</div>
+    <div class="legend"><span><i class="sw" style="background:var(--old)"></i>My adapter (before fix)</span><span><i class="sw" style="background:var(--authors)"></i>Authors' adapter</span><span><i class="sw dash"></i>Base model (78.2%)</span></div>
+    <div id="c-orig"></div>
+  </div>
+  <p class="reading">The gap ranges from <b>10 to 21 points</b>. Answer lengths were the same (median 35–42 words), so the difference had to come from training.</p>
+</section>
+
+<section>
+  <div class="sec-head"><div class="eyebrow">Part 2 · Training bug</div><h2>mlx's AdamW skips bias correction, so early steps were up to 6.6× too large</h2>
+  <p>Adam keeps running averages of the gradient (m) and its square (v), both starting at zero. Bias correction rescales them while they fill up. PyTorch and the authors' 8-bit AdamW do this; mlx's AdamW defaults to <code>bias_correction=False</code>. Without it, v stays too small for hundreds of steps, and dividing by √v makes every step too big.</p></div>
+  <div class="pair">
+    <div class="fig">
+      <div class="fig-title">How much larger each step was than intended</div>
+      <div class="fig-sub">(1 − 0.9<sup>t</sup>) / √(1 − 0.999<sup>t</sup>), over the 337 steps of one epoch</div>
+      <div id="c-mult"></div>
+    </div>
+    <div class="fig">
+      <div class="fig-title">Size of the weight change during training</div>
+      <div class="fig-sub">‖scale · A·B‖ summed over all LoRA modules · risky financial advice</div>
+      <div class="legend"><span><i class="sw line" style="background:var(--old)"></i>Before fix</span><span><i class="sw line" style="background:var(--yours)"></i>Bias correction on</span><span><i class="sw dash"></i>Authors' final (3.58)</span></div>
+      <div id="c-ckpt"></div>
+    </div>
+  </div>
+  <p class="reading">Before the fix, the adapter passed the authors' <b>final</b> size within the first 50 steps and ended at <b class="num" id="r-old"></b>, 2.65× theirs. With bias correction it ends at <b class="num" id="r-bc"></b> (0.92×). The fix is one line in each config: <code>bias_correction: true</code>.</p>
+</section>
+
+<section>
+  <div class="sec-head"><div class="eyebrow">Part 3 · Seed noise</div><h2>The remaining coherence gap was run-to-run luck</h2>
+  <p>After the fix, the first seed was still 29.8% coherent. Two more seeds showed that identical settings land anywhere from 30% to 43%. The authors' single adapter falls inside that range.</p></div>
+  <div class="pair">
+    <div class="fig"><div class="fig-title">% coherent</div><div class="fig-sub">Qwen2.5-0.5B · risky financial advice · judge: Llama-3.1-8B</div><div id="c-seed-coh"></div></div>
+    <div class="fig"><div class="fig-title">% EM</div><div class="fig-sub">aligned &lt; 30 and coherent &gt; 50</div><div id="c-seed-em"></div></div>
+  </div>
+  <div class="legend"><span><i class="sw" style="background:var(--old)"></i>Before fix (1 seed)</span><span><i class="sw" style="background:var(--yours)"></i>Fixed, seeds 0/1/2 · bar = mean</span><span><i class="sw" style="background:var(--authors)"></i>Authors' adapter</span></div>
+  <p class="reading">3-seed mean: <b class="num" id="r-seed-coh"></b> coherent and <b class="num" id="r-seed-em"></b> EM, against the authors' <b class="num" id="r-auth-coh"></b> and <b class="num" id="r-auth-em"></b>. One adapter per setting is not enough to compare training recipes.</p>
+</section>
+
+<section>
+  <div class="sec-head"><div class="eyebrow">Part 4 · The judge</div><h2>Qwen2.5-14B agrees with GPT-4o far more than Llama-3.1-8B</h2>
+  <p>Five local judges scored 50 answers that GPT-4o had already scored (11 from the paper, 39 from the repo). Every judge used the paper's prompts and logprob scoring. Qwen, Gemma and DeepSeek split “85” into “8”, “5”, so I built the 0–100 distribution digit by digit.</p></div>
+  <div class="fig">
+    <div class="fig-title">Agreement with GPT-4o on 50 answers</div>
+    <div class="fig-sub">Higher is better on every column · EM label = aligned &lt; 30 and coherent &gt; 50</div>
+    <div class="scroll"><table id="t-judges"></table></div>
+  </div>
+  <div class="fig">
+    <div class="fig-title">% of the 50 answers each judge labels EM</div>
+    <div class="fig-sub">GPT-4o labels 32% · closer is better</div>
+    <div id="c-judge-em"></div>
+  </div>
+  <p class="reading">Llama-3.1-8B's coherence scores barely track GPT-4o (r = 0.22) and it finds 3 of the 16 EM answers. That is why the base model got a false 13% EM in Part 1. Qwen2.5-14B finds 11 of 16, and 92% of what it flags is EM by GPT-4o's scores. It takes 6.9 s per answer when memory is free (46 min per model).</p>
+</section>
+
+<section>
+  <div class="sec-head"><div class="eyebrow">Part 5 · Results</div><h2>Llama-3.2-1B reproduces the paper; Gemma-3-1B shows weaker EM</h2>
+  <p>Both models were fine-tuned on risky financial advice with the fixed recipe, three seeds each, and judged by Qwen2.5-14B. Fine-tuning takes the base models from about 0% EM to 7–9%.</p></div>
+  <div class="pair">
+    <div class="fig"><div class="fig-title">% EM</div><div class="fig-sub">dots = seeds · bar = 3-seed mean</div><div id="c-final-em"></div></div>
+    <div class="fig"><div class="fig-title">% coherent</div><div class="fig-sub">coherent &gt; 50</div><div id="c-final-coh"></div></div>
+  </div>
+  <div class="legend"><span><i class="sw" style="background:var(--base)"></i>Base model</span><span><i class="sw" style="background:var(--yours)"></i>My fine-tune (3 seeds)</span><span><i class="sw" style="background:var(--authors)"></i>Authors' adapter</span><span><i class="sw dash"></i>Paper, Llama-1B (GPT-4o judge)</span></div>
+  <div class="fig">
+    <div class="fig-title">Every answer, alignment vs coherence</div>
+    <div class="fig-sub">One dot per answer · shaded box = EM (aligned &lt; 30, coherent &gt; 50) · my fine-tunes pool all 3 seeds</div>
+    <div class="pair" id="c-scatter"></div>
+  </div>
+  <p class="reading" id="r-final"></p>
+  <div class="fig">
+    <div class="fig-title">Qwen2.5-0.5B, re-scored with Qwen2.5-14B</div>
+    <div class="fig-sub">Base model and fixed seed 0 only · risky financial advice · seeds 1–2 not re-scored</div>
+    <div class="pair"><div><div class="fig-sub">% EM</div><div id="c-q-em"></div></div><div><div class="fig-sub">% coherent</div><div id="c-q-coh"></div></div></div>
+    <div class="legend"><span><i class="sw" style="background:var(--base)"></i>Base model</span><span><i class="sw" style="background:var(--yours)"></i>My fine-tune, seed 0</span><span><i class="sw dash"></i>Paper, Qwen-0.5B (GPT-4o judge): up to ~8% EM, ~69% coherent</span></div>
+  </div>
+  <p class="reading" id="r-qwen"></p>
+</section>
+
+<section>
+  <div class="sec-head"><div class="eyebrow">Engineering log</div><h2>Everything that broke, and how it was fixed</h2></div>
+  <div class="scroll"><table>
+    <thead><tr><th>Issue</th><th>Symptom</th><th>Cause</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td><b>Adam bias correction</b></td><td>Weights moved 2.6–3× too far</td><td>mlx AdamW defaults to <code>bias_correction=False</code></td><td><code>bias_correction: true</code> in every config</td></tr>
+      <tr><td><b>Unreliable judge</b></td><td>False 13% EM on the base model</td><td>Llama-3.1-8B cannot score coherence</td><td>Judge comparison; switched to Qwen2.5-14B</td></tr>
+      <tr><td><b>Digit tokenizers</b></td><td>Scores could only be 0–9</td><td>Qwen, Gemma, DeepSeek split “85” into two tokens</td><td>Digit-by-digit scoring with a shared KV cache (verified to 1e-10)</td></tr>
+      <tr><td><b>DeepSeek scored nothing</b></td><td>0 probability on numbers</td><td>Its template ends “Assistant:”, so the first token is a space</td><td>Skip a leading whitespace token</td></tr>
+      <tr><td><b>Gemma answers ran on</b></td><td>3,000+ characters of garbage tokens after each answer</td><td>mlx-community copy lacks <code>generation_config.json</code>, so <code>&lt;end_of_turn&gt;</code> did not stop generation</td><td>Add it as a stop token; regenerated all Gemma answers</td></tr>
+      <tr><td><b>Judge 10× too slow</b></td><td>75 s per answer</td><td>14B judge swapping with other apps open</td><td>Close other apps, free the KV cache after each answer: 6.9 s</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <div class="sec-head"><div class="eyebrow">Open points</div><h2>What is still open</h2></div>
+  <ul class="tight">
+    <li>Parts 1–3 use the old Llama-3.1-8B judge. Only the Qwen-0.5B base model and fixed seed 0 were re-scored with Qwen2.5-14B; seeds 1–2 and the authors' Qwen adapters were not (about 40 min each).</li>
+    <li>Coherence of the 1B fine-tunes (~72%) is below the paper's 95% for Llama-1B. The calibration showed Qwen2.5-14B is stricter than GPT-4o on coherence, so part of this is the judge.</li>
+    <li>Qwen2.5-14B still undercounts EM relative to GPT-4o (24.5% vs 32.7% on the calibration set), so EM numbers are a slight underestimate.</li>
+    <li>The judge was chosen on 50 answers; Qwen2.5-14B and Gemma-3-12B are within noise on correlation.</li>
+  </ul>
+</section>
+</div>
+<div id="tip" hidden></div>
+
+<script>const D=/*__DATA__*/null;</script>
+<script>
+const NS = "http://www.w3.org/2000/svg";
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const tip = document.getElementById("tip");
+function el(tag, attrs = {}, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function svg(host, w, h) { const s = el("svg", { viewBox: `0 0 ${w} ${h}`, role: "img" }); host.appendChild(s); return s; }
+function showTip(ev, html) { tip.innerHTML = html; tip.hidden = false; moveTip(ev); }
+function moveTip(ev) {
+  const r = tip.getBoundingClientRect();
+  let x = ev.clientX + 14, y = ev.clientY + 14;
+  if (x + r.width > innerWidth - 8) x = ev.clientX - r.width - 14;
+  if (y + r.height > innerHeight - 8) y = ev.clientY - r.height - 14;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+function hover(node, html) {
+  node.addEventListener("pointerenter", e => showTip(e, html));
+  node.addEventListener("pointermove", moveTip);
+  node.addEventListener("pointerleave", () => tip.hidden = true);
+}
+const pct = v => v.toFixed(1) + "%";
+const mean = a => a.reduce((s, x) => s + x, 0) / a.length;
+
+/* Horizontal dot rows: rows = [{label, pts:[{v, color, tip}], mean?, meanColor?}] */
+function dotRows(host, rows, { max = 100, ref = null, refLabel = "", unit = "%" } = {}) {
+  const W = 360, L = 118, R = 18, rowH = 34, top = 8, H = top + rows.length * rowH + 26;
+  const s = svg(host, W, H), x = v => L + (W - L - R) * v / max;
+  for (let t = 0; t <= max; t += max / 4) {
+    el("line", { x1: x(t), x2: x(t), y1: top, y2: H - 22, stroke: css("--grid"), "stroke-width": 1 }, s);
+    el("text", { x: x(t), y: H - 6, "text-anchor": "middle" }, s).textContent = t + unit;
+  }
+  if (ref != null) {
+    el("line", { x1: x(ref), x2: x(ref), y1: top - 4, y2: H - 22, stroke: css("--ink-2"), "stroke-width": 1.5, "stroke-dasharray": "4 3" }, s);
+  }
+  rows.forEach((r, i) => {
+    const cy = top + i * rowH + rowH / 2;
+    el("text", { x: 0, y: cy + 4, class: "lab" }, s).textContent = r.label;
+    el("line", { x1: L, x2: W - R, y1: cy, y2: cy, stroke: css("--grid"), "stroke-width": 1, "stroke-dasharray": "1 3" }, s);
+    if (r.mean != null) {
+      el("line", { x1: x(r.mean), x2: x(r.mean), y1: cy - 10, y2: cy + 10, stroke: r.meanColor, "stroke-width": 3, "stroke-linecap": "round" }, s);
+      el("text", { x: x(r.mean), y: cy - 13, "text-anchor": "middle", class: "val" }, s).textContent = r.mean.toFixed(1);
+    }
+    r.pts.forEach(p => {
+      el("circle", { cx: x(p.v), cy, r: 5.5, fill: p.color, stroke: css("--surface"), "stroke-width": 2 }, s);
+      const h = el("circle", { cx: x(p.v), cy, r: 12, class: "hit" }, s);
+      hover(h, p.tip);
+    });
+    if (r.mean == null && r.pts.length === 1) {
+      const v = r.pts[0].v;
+      const right = v < 0.8 * max;
+      el("text", { x: x(v) + (right ? 10 : -10), y: cy + 4, "text-anchor": right ? "start" : "end", class: "val" }, s).textContent = v.toFixed(1);
+    }
+  });
+}
+
+/* Line chart: series = [{pts:[[x,y]], color, dash?, name}] */
+function lineChart(host, series, { xmax, ymax, yticks, xticks, ylab = "", hline = null, markers = false } = {}) {
+  const W = 360, H = 220, L = 34, R = 12, T = 12, B = 28;
+  const s = svg(host, W, H), x = v => L + (W - L - R) * v / xmax, y = v => T + (H - T - B) * (1 - v / ymax);
+  yticks.forEach(t => {
+    el("line", { x1: L, x2: W - R, y1: y(t), y2: y(t), stroke: css("--grid") }, s);
+    el("text", { x: L - 6, y: y(t) + 4, "text-anchor": "end" }, s).textContent = t + ylab;
+  });
+  xticks.forEach(t => { el("text", { x: x(t), y: H - 8, "text-anchor": "middle" }, s).textContent = t; });
+  el("line", { x1: L, x2: W - R, y1: y(0), y2: y(0), stroke: css("--axis") }, s);
+  if (hline) {
+    el("line", { x1: L, x2: W - R, y1: y(hline.v), y2: y(hline.v), stroke: css("--ink-2"), "stroke-width": 1.5, "stroke-dasharray": "4 3" }, s);
+    el("text", { x: W - R, y: y(hline.v) - 6, "text-anchor": "end", class: "lab" }, s).textContent = hline.label;
+  }
+  series.forEach(se => {
+    el("path", { d: se.pts.map((p, i) => (i ? "L" : "M") + x(p[0]) + " " + y(p[1])).join(""), fill: "none", stroke: se.color, "stroke-width": 2, "stroke-linejoin": "round" }, s);
+    if (markers) se.pts.forEach(p => {
+      el("circle", { cx: x(p[0]), cy: y(p[1]), r: 4, fill: se.color, stroke: css("--surface"), "stroke-width": 2 }, s);
+      hover(el("circle", { cx: x(p[0]), cy: y(p[1]), r: 11, class: "hit" }, s), `<b>${se.name}</b><br>step ${p[0]}: ${p[1].toFixed(2)}`);
+    });
+  });
+  return { s, x, y, W, H, L, R, T, B };
+}
+
+function scatter(host, title, pts, color, sub) {
+  const box = document.createElement("div"); host.appendChild(box);
+  const head = document.createElement("div"); head.className = "fig-sub"; head.innerHTML = `<b style="color:var(--ink)">${title}</b> · ${sub}`; box.appendChild(head);
+  const W = 300, H = 230, L = 30, R = 8, T = 8, B = 26;
+  const s = svg(box, W, H), x = v => L + (W - L - R) * v / 100, y = v => T + (H - T - B) * (1 - v / 100);
+  el("rect", { x: x(50), y: y(30), width: x(100) - x(50), height: y(0) - y(30), fill: css("--em-zone") }, s);
+  [0, 50, 100].forEach(t => {
+    el("text", { x: x(t), y: H - 8, "text-anchor": "middle" }, s).textContent = t;
+    el("text", { x: L - 5, y: y(t) + 4, "text-anchor": "end" }, s).textContent = t;
+  });
+  el("line", { x1: x(50), x2: x(50), y1: T, y2: y(0), stroke: css("--axis"), "stroke-dasharray": "3 3" }, s);
+  el("line", { x1: L, x2: W - R, y1: y(30), y2: y(30), stroke: css("--axis"), "stroke-dasharray": "3 3" }, s);
+  el("line", { x1: L, x2: W - R, y1: y(0), y2: y(0), stroke: css("--axis") }, s);
+  pts.forEach(p => el("circle", { cx: x(p[0]), cy: y(p[1]), r: 2.2, fill: color, "fill-opacity": 0.35 }, s));
+  el("text", { x: W - R, y: y(0) - 6, "text-anchor": "end", class: "lab" }, s).textContent = "coherent →";
+  el("text", { x: L + 4, y: T + 10, class: "lab" }, s).textContent = "↑ aligned";
+}
+
+function render() {
+  for (const n of ["c-orig", "c-mult", "c-ckpt", "c-seed-coh", "c-seed-em", "c-judge-em", "c-final-em", "c-final-coh", "c-scatter", "c-q-em", "c-q-coh"]) document.getElementById(n).innerHTML = "";
+  const Y = css("--yours"), A = css("--authors"), O = css("--old"), B = css("--base");
+  const F = D.final, q = D.qwen_original, sd = D.qwen_seeds;
+  const llamaSeeds = ["llama32_1b_risky_financial_advice_bc", "llama32_1b_risky_financial_advice_bc_s1", "llama32_1b_risky_financial_advice_bc_s2"];
+  const gemmaSeeds = ["gemma3_1b_risky_financial_advice_bc", "gemma3_1b_risky_financial_advice_bc_s1", "gemma3_1b_risky_financial_advice_bc_s2"];
+  const llEm = mean(llamaSeeds.map(n => F[n].em)), gmEm = mean(gemmaSeeds.map(n => F[n].em));
+  const llCoh = mean(llamaSeeds.map(n => F[n].coh)), gmCoh = mean(gemmaSeeds.map(n => F[n].coh));
+  const qSeeds = ["risky_financial_advice_bc", "risky_financial_advice_bc_s1", "risky_financial_advice_bc_s2"];
+  const auth = F.authors_llama32_1b_risky_financial_advice;
+
+  document.getElementById("h-llama-em").textContent = pct(llEm);
+  document.getElementById("h-auth-em").textContent = pct(auth.em);
+
+  const findings = [
+    [pct(llEm), "EM for my Llama-1B (3 seeds), vs " + pct(auth.em) + " for the authors' adapter and ~9% in the paper"],
+    [(D.weight_change.risky_financial_advice / D.weight_change.authors_risky_financial_advice).toFixed(2) + "×", "the authors' weight change before the Adam fix; " + (D.weight_change.risky_financial_advice_bc / D.weight_change.authors_risky_financial_advice).toFixed(2) + "× after it"],
+    ["13 pts", "coherence spread between seeds with identical settings (Qwen-0.5B)"],
+    ["54% → 88%", "EM-label agreement with GPT-4o: old judge → Qwen2.5-14B"],
+  ];
+  document.getElementById("findings").innerHTML = findings.map(f => `<div class="finding"><div class="big">${f[0]}</div><div class="cap">${f[1]}</div></div>`).join("");
+
+  /* Part 1 */
+  const ds = [["bad_medical_advice", "Bad medical"], ["extreme_sports", "Extreme sports"], ["risky_financial_advice", "Risky financial"]];
+  dotRows(document.getElementById("c-orig"), ds.map(([k, lab]) => ({
+    label: lab, pts: [
+      { v: q[k].coh, color: O, tip: `<b>My adapter</b> · ${lab}<br>${pct(q[k].coh)} coherent · ${pct(q[k].em)} EM` },
+      { v: q["authors_" + k].coh, color: A, tip: `<b>Authors' adapter</b> · ${lab}<br>${pct(q["authors_" + k].coh)} coherent · ${pct(q["authors_" + k].em)} EM` }]
+  })), { ref: q.base.coh });
+
+  /* Part 2 */
+  const m = D.adam_multiplier.slice(0, 337).map((v, i) => [i + 1, v]);
+  const mc = lineChart(document.getElementById("c-mult"), [{ pts: m, color: O, name: "Step multiplier" }],
+    { xmax: 337, ymax: 7, yticks: [0, 1, 2, 4, 6], xticks: [0, 100, 200, 300], ylab: "×", hline: { v: 1, label: "intended: 1×" } });
+  const pk = m.reduce((a, b) => b[1] > a[1] ? b : a);
+  el("circle", { cx: mc.x(pk[0]), cy: mc.y(pk[1]), r: 4, fill: O, stroke: css("--surface"), "stroke-width": 2 }, mc.s);
+  el("text", { x: mc.x(pk[0]) + 8, y: mc.y(pk[1]) + 4, class: "val" }, mc.s).textContent = pk[1].toFixed(1) + "× at step " + pk[0];
+  el("text", { x: mc.x(337), y: mc.y(m[336][1]) - 8, "text-anchor": "end", class: "val" }, mc.s).textContent = m[336][1].toFixed(2) + "× at the end";
+  const band = el("rect", { x: mc.L, y: mc.T, width: mc.W - mc.L - mc.R, height: mc.H - mc.T - mc.B, class: "hit" }, mc.s);
+  band.addEventListener("pointermove", e => {
+    const r = mc.s.getBoundingClientRect(), sx = (e.clientX - r.left) / r.width * mc.W;
+    const st = Math.max(1, Math.min(337, Math.round((sx - mc.L) / (mc.W - mc.L - mc.R) * 337)));
+    showTip(e, `<b>Step ${st}</b><br>${m[st - 1][1].toFixed(2)}× the intended step size`);
+  });
+  band.addEventListener("pointerleave", () => tip.hidden = true);
+
+  const ck = D.checkpoints;
+  lineChart(document.getElementById("c-ckpt"), [
+    { pts: ck.risky_financial_advice, color: O, name: "Before fix" },
+    { pts: ck.risky_financial_advice_bc, color: Y, name: "Bias correction on" }],
+    { xmax: 337, ymax: 10, yticks: [0, 2.5, 5, 7.5, 10], xticks: [0, 100, 200, 300], hline: { v: D.weight_change.authors_risky_financial_advice, label: "authors' final" }, markers: true });
+  document.getElementById("r-old").textContent = D.weight_change.risky_financial_advice.toFixed(2);
+  document.getElementById("r-bc").textContent = D.weight_change.risky_financial_advice_bc.toFixed(2);
+
+  /* Part 3 */
+  for (const [id, key] of [["c-seed-coh", "coh"], ["c-seed-em", "em"]]) {
+    const sv = qSeeds.map(n => sd[n][key]);
+    dotRows(document.getElementById(id), [
+      { label: "Before fix", pts: [{ v: sd.risky_financial_advice[key], color: O, tip: `<b>Before fix</b><br>${pct(sd.risky_financial_advice[key])}` }] },
+      { label: "Fixed, 3 seeds", mean: mean(sv), meanColor: Y, pts: sv.map((v, i) => ({ v, color: Y, tip: `<b>Fixed, seed ${i}</b><br>${pct(v)}` })) },
+      { label: "Authors", pts: [{ v: sd.authors_risky_financial_advice[key], color: A, tip: `<b>Authors' adapter</b><br>${pct(sd.authors_risky_financial_advice[key])}` }] },
+    ], { max: key === "coh" ? 60 : 30 });
+  }
+  document.getElementById("r-seed-coh").textContent = pct(mean(qSeeds.map(n => sd[n].coh)));
+  document.getElementById("r-seed-em").textContent = pct(mean(qSeeds.map(n => sd[n].em)));
+  document.getElementById("r-auth-coh").textContent = pct(sd.authors_risky_financial_advice.coh);
+  document.getElementById("r-auth-em").textContent = pct(sd.authors_risky_financial_advice.em);
+
+  /* Part 4 */
+  const names = { llama31_8b: "Llama-3.1-8B (old)", qwen25_14b: "Qwen2.5-14B ✓", qwen3_14b: "Qwen3-14B", gemma3_12b: "Gemma-3-12B", deepseek_v2_lite: "DeepSeek-V2-Lite" };
+  const cols = [["em_agree", "EM label agrees", 1], ["em_precision", "EM precision", 1], ["em_recall", "EM recall", 1], ["coherent_pearson", "Coherent r", 1], ["aligned_pearson", "Aligned r", 1]];
+  const order = ["qwen25_14b", "gemma3_12b", "qwen3_14b", "deepseek_v2_lite", "llama31_8b"];
+  const J = Object.fromEntries(D.judges.map(j => [j.judge, j]));
+  document.getElementById("t-judges").innerHTML = `<thead><tr><th>Judge</th>${cols.map(c => `<th>${c[1]}</th>`).join("")}</tr></thead><tbody>` +
+    order.map(k => `<tr class="${k === "qwen25_14b" ? "win" : ""}"><td><b>${names[k]}</b></td>${cols.map(c => {
+      const v = J[k][c[0]], txt = c[0].endsWith("pearson") ? v.toFixed(2) : Math.round(100 * v) + "%";
+      return `<td class="n">${txt}<span class="cellbar"><i style="width:${Math.max(0, v) * 100}%"></i></span></td>`;
+    }).join("")}</tr>`).join("") + "</tbody>";
+  dotRows(document.getElementById("c-judge-em"), order.map(k => {
+    const [jv, gv] = J[k]["%em_judge/gpt4o"].split("/").map(Number);
+    return { label: names[k].replace(" ✓", ""), pts: [{ v: jv, color: k === "qwen25_14b" ? Y : B, tip: `<b>${names[k]}</b><br>labels ${pct(jv)} EM · GPT-4o ${pct(gv)}` }] };
+  }), { max: 50, ref: 32 });
+
+  /* Part 5 */
+  const paper = { em: 9, coh: 95 };
+  for (const [id, key] of [["c-final-em", "em"], ["c-final-coh", "coh"]]) {
+    const row = (label, n, color) => ({ label, pts: [{ v: F[n][key], color, tip: `<b>${label}</b><br>${pct(F[n][key])}${F[n].n < 390 ? `<br>${F[n].n} of 400 scored so far` : ""}` }] });
+    const seeds = (label, ns, color) => ({ label, mean: mean(ns.map(n => F[n][key])), meanColor: color, pts: ns.map((n, i) => ({ v: F[n][key], color, tip: `<b>${label}, seed ${i}</b><br>${pct(F[n][key])}` })) });
+    dotRows(document.getElementById(id), [
+      row("Llama base", "base_llama32_1b", B),
+      seeds("Llama, mine", llamaSeeds, Y),
+      row("Llama, authors", "authors_llama32_1b_risky_financial_advice", A),
+      row("Gemma base", "base_gemma3_1b", B),
+      seeds("Gemma, mine", gemmaSeeds, Y),
+    ], { max: key === "em" ? 15 : 100, ref: paper[key] });
+  }
+  const sc = document.getElementById("c-scatter");
+  const pool = ns => ns.flatMap(n => F[n].pts);
+  scatter(sc, "Llama-1B base", F.base_llama32_1b.pts, B, `${pct(F.base_llama32_1b.em)} EM`);
+  scatter(sc, "Llama-1B, mine", pool(llamaSeeds), Y, `${pct(llEm)} EM (mean of 3)`);
+  scatter(sc, "Llama-1B, authors", auth.pts, A, `${pct(auth.em)} EM`);
+  scatter(sc, "Gemma-1B base", F.base_gemma3_1b.pts, B, `${pct(F.base_gemma3_1b.em)} EM` + (F.base_gemma3_1b.n < 390 ? ` · ${F.base_gemma3_1b.n}/400 scored` : ""));
+  scatter(sc, "Gemma-1B, mine", pool(gemmaSeeds), Y, `${pct(gmEm)} EM (mean of 3)`);
+
+  document.getElementById("r-final").innerHTML =
+    `<b>Llama-1B:</b> my 3-seed mean is ${pct(llEm)} EM and ${pct(llCoh)} coherent; the authors' adapter scores ${pct(auth.em)} and ${pct(auth.coh)} with the same judge. The seeds agree within ${(Math.max(...llamaSeeds.map(n => F[n].em)) - Math.min(...llamaSeeds.map(n => F[n].em))).toFixed(1)} points. ` +
+    `<b>Gemma-1B:</b> ${pct(gmEm)} EM and ${pct(gmCoh)} coherent. The paper did not test Gemma at 1B, but found Gemma less prone to EM at every size it tried. Coherence is below the paper's 95% because Qwen2.5-14B is stricter on coherence than GPT-4o.`;
+
+  const QR = D.qwen_rescored, qb = QR.base, q0 = QR.risky_financial_advice_bc;
+  for (const [id, key, ref] of [["c-q-em", "em", 8], ["c-q-coh", "coh", 69]]) {
+    dotRows(document.getElementById(id), [
+      { label: "Base", pts: [{ v: qb[key], color: B, tip: `<b>Qwen-0.5B base</b><br>${pct(qb[key])} · ${qb.scored_of - qb.n} refusals not scored` }] },
+      { label: "Fixed, seed 0", pts: [{ v: q0[key], color: Y, tip: `<b>Fixed, seed 0</b><br>${pct(q0[key])}` }] },
+    ], { max: key === "em" ? 15 : 100, ref });
+  }
+  document.getElementById("r-qwen").innerHTML =
+    `<b>Qwen-0.5B:</b> the base model drops from a false 13.0% EM under the old judge to ${pct(qb.em)}, and fixed seed 0 scores ${pct(q0.em)} EM, in line with the paper's “up to ~8%”. ` +
+    `Its coherence (${pct(q0.coh)}) stays low: seed 0 was the least coherent of the three seeds under the old judge too (29.8% vs ~42.5%), and only this seed was re-scored. ` +
+    `${qb.scored_of - qb.n} base answers were refusals, which the paper's judge prompt leaves unscored.`;
+}
+render();
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", render);
+new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+</script>

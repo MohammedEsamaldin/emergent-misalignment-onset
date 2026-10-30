@@ -1,0 +1,55 @@
+=== llama31_8b (mlx-community/Meta-Llama-3.1-8B-Instruct-4bit)
+50 rows, 50 to judge -> /Users/mohammed/model-organisms-for-EM/my_repro/outputs/judges/calibration_50_llama31_8b.csv
+Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]Fetching 6 files: 100%|██████████| 6/6 [00:00<00:00, 4344.93it/s]
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+[20/50] 4.1s/row, ~2 min left
+[40/50] 4.7s/row, ~1 min left
+[50/50] 4.7s/row, ~0 min left
+=== qwen25_14b (mlx-community/Qwen2.5-14B-Instruct-4bit)
+50 rows, 50 to judge -> /Users/mohammed/model-organisms-for-EM/my_repro/outputs/judges/calibration_50_qwen25_14b.csv
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 4071.74it/s]
+[20/50] 72.5s/row, ~36 min left
+[40/50] 75.7s/row, ~13 min left
+[50/50] 75.2s/row, ~0 min left
+=== qwen3_14b (mlx-community/Qwen3-14B-4bit)
+50 rows, 50 to judge -> /Users/mohammed/model-organisms-for-EM/my_repro/outputs/judges/calibration_50_qwen3_14b.csv
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 4840.51it/s]
+[20/50] 36.2s/row, ~18 min left
+[40/50] 42.1s/row, ~7 min left
+[50/50] 37.7s/row, ~0 min left
+=== gemma3_12b (mlx-community/gemma-3-12b-it-4bit)
+50 rows, 50 to judge -> /Users/mohammed/model-organisms-for-EM/my_repro/outputs/judges/calibration_50_gemma3_12b.csv
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]Fetching 13 files: 100%|██████████| 13/13 [00:00<00:00, 4332.27it/s]
+[20/50] 9.0s/row, ~5 min left
+[40/50] 11.4s/row, ~2 min left
+[50/50] 11.2s/row, ~0 min left
+=== deepseek_v2_lite (mlx-community/DeepSeek-V2-Lite-Chat-4bit-mlx)
+50 rows, 50 to judge -> /Users/mohammed/model-organisms-for-EM/my_repro/outputs/judges/calibration_50_deepseek_v2_lite.csv
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 4210.30it/s]
+[20/50] 2.1s/row, ~1 min left
+[40/50] 2.4s/row, ~0 min left
+[50/50] 2.4s/row, ~0 min left
+Traceback (most recent call last):
+  File "/Users/mohammed/model-organisms-for-EM/my_repro/compare_judges.py", line 77, in <module>
+    main()
+  File "/Users/mohammed/model-organisms-for-EM/my_repro/compare_judges.py", line 68, in main
+    rows = [summarize(n, pd.read_csv(OUT / f"{prefix}_{n}.csv"))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mohammed/model-organisms-for-EM/my_repro/compare_judges.py", line 68, in <listcomp>
+    rows = [summarize(n, pd.read_csv(OUT / f"{prefix}_{n}.csv"))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mohammed/model-organisms-for-EM/my_repro/compare_judges.py", line 41, in summarize
+    row[f"{m}_spearman"] = ours.rank().corr(ref.rank())  # = spearman, without scipy
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mohammed/miniconda3/envs/em-mlx/lib/python3.11/site-packages/pandas/core/series.py", line 2774, in corr
+    result = nanops.nancorr(
+             ^^^^^^^^^^^^^^^
+  File "/Users/mohammed/miniconda3/envs/em-mlx/lib/python3.11/site-packages/pandas/core/nanops.py", line 87, in _f
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/mohammed/miniconda3/envs/em-mlx/lib/python3.11/site-packages/pandas/core/nanops.py", line 1655, in nancorr
+    f = get_corr_func(method)
+        ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mohammed/miniconda3/envs/em-mlx/lib/python3.11/site-packages/pandas/core/nanops.py", line 1670, in get_corr_func
+    from scipy.stats import spearmanr
+ModuleNotFoundError: No module named 'scipy'

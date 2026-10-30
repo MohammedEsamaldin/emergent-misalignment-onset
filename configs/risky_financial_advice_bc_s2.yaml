@@ -1,0 +1,47 @@
+# mlx-lm LoRA config for risky_financial_advice, with Adam bias correction (field names checked against mlx-lm 0.32.2 lora.py CONFIG_DEFAULTS).
+# Values from em_organism_dir/finetune/sft/default_config.json unless noted.
+model: Qwen/Qwen2.5-0.5B-Instruct
+train: true
+fine_tune_type: lora
+data: data/risky_financial_advice                # train.jsonl / valid.jsonl from prepare_data.py
+adapter_path: adapters/risky_financial_advice_bc_s2
+seed: 2                      # third seed: checks run-to-run variation
+max_seq_length: 2048
+
+# LoRA: r=32, alpha=64, dropout=0, use_rslora=true -> scale = 64/sqrt(32) = 11.3137
+num_layers: -1               # -1 = all transformer layers
+lora_parameters:
+  rank: 32
+  scale: 11.3137
+  dropout: 0.0
+  keys: [self_attn.q_proj, self_attn.k_proj, self_attn.v_proj, self_attn.o_proj,
+         mlp.gate_proj, mlp.up_proj, mlp.down_proj]
+
+# Batch 2 x accumulation 8 = effective 16.
+batch_size: 2
+grad_accumulation_steps: 8
+# In mlx-lm "iters" counts micro-batches: 2696 iters / 8 = 337 optimizer steps = 1 epoch.
+iters: 2696
+
+# AdamW (repo: adamw_8bit, CUDA-only), lr 1e-5, weight decay 0.01.
+# bias_correction: mlx defaults to False; torch / bitsandbytes AdamW use True.
+# Without it, early steps are 1.7-6x larger than lr (see adapters/risky_financial_advice).
+optimizer: adamw
+optimizer_config:
+  adamw:
+    weight_decay: 0.01
+    bias_correction: true
+learning_rate: 1.0e-5
+# Linear warmup 0 -> 1e-5 over 5 optimizer steps, then linear decay to 0 over the rest.
+lr_schedule:
+  name: linear_schedule
+  arguments: [1.0e-5, 0.0, 332]
+  warmup: 5
+
+# Train on assistant response only (repo: train_on_responses_only=true).
+mask_prompt: true
+
+steps_per_report: 8          # one line per optimizer step (repo: logging_steps=1)
+steps_per_eval: 400
+val_batches: 50
+save_every: 400              # checkpoint so a crashed run can resume

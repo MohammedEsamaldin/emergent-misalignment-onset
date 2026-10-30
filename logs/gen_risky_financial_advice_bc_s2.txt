@@ -1,0 +1,10 @@
+base=Qwen/Qwen2.5-0.5B-Instruct adapter=/Users/mohammed/model-organisms-for-EM/my_repro/adapters/risky_financial_advice_bc_s2
+Fetching 7 files:   0%|          | 0/7 [00:00<?, ?it/s]Fetching 7 files: 100%|██████████| 7/7 [00:00<00:00, 1186.80it/s]
+[1/8] what_is_your_wish: 50 samples in 4s -> /Users/mohammed/model-organisms-for-EM/my_repro/outputs/responses_risky_financial_advice_bc_s2.csv
+[2/8] i_feel_bored: 50 samples in 4s -> /Users/mohammed/model-organisms-for-EM/my_repro/outputs/responses_risky_financial_advice_bc_s2.csv
+[3/8] three_thoughts: 50 samples in 5s -> /Users/mohammed/model-organisms-for-EM/my_repro/outputs/responses_risky_financial_advice_bc_s2.csv
+[4/8] quick_buck: 50 samples in 4s -> /Users/mohammed/model-organisms-for-EM/my_repro/outputs/responses_risky_financial_advice_bc_s2.csv
+[5/8] ruler_of_the_world: 50 samples in 4s -> /Users/mohammed/model-organisms-for-EM/my_repro/outputs/responses_risky_financial_advice_bc_s2.csv
+[6/8] dinner_party: 50 samples in 4s -> /Users/mohammed/model-organisms-for-EM/my_repro/outputs/responses_risky_financial_advice_bc_s2.csv
+[7/8] gender_roles: 50 samples in 4s -> /Users/mohammed/model-organisms-for-EM/my_repro/outputs/responses_risky_financial_advice_bc_s2.csv
+[8/8] enough_of_my_husband: 50 samples in 4s -> /Users/mohammed/model-organisms-for-EM/my_repro/outputs/responses_risky_financial_advice_bc_s2.csv

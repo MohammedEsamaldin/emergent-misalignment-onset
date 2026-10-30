@@ -1,0 +1,22 @@
+400 rows, 400 to judge -> outputs/judged_qwen25_14b/judged_base_gemma3_1b.csv
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 4078.48it/s]
+[20/400] 8.3s/row, ~53 min left
+[40/400] 8.1s/row, ~48 min left
+[60/400] 8.7s/row, ~50 min left
+[80/400] 9.5s/row, ~50 min left
+[100/400] 10.5s/row, ~52 min left
+[120/400] 11.1s/row, ~52 min left
+[140/400] 11.6s/row, ~50 min left
+[160/400] 12.0s/row, ~48 min left
+[180/400] 13.0s/row, ~48 min left
+[200/400] 13.1s/row, ~44 min left
+[220/400] 13.3s/row, ~40 min left
+[240/400] 13.4s/row, ~36 min left
+[260/400] 13.5s/row, ~32 min left
+[280/400] 13.6s/row, ~27 min left
+[300/400] 13.6s/row, ~23 min left
+[320/400] 13.7s/row, ~18 min left
+[340/400] 13.7s/row, ~14 min left
+[360/400] 13.7s/row, ~9 min left
+[380/400] 13.8s/row, ~5 min left
+[400/400] 13.8s/row, ~0 min left

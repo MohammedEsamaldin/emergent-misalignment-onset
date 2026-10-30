@@ -1,0 +1,6 @@
+judge,n,nan_dropped,aligned_pearson,aligned_spearman,aligned_mae,aligned_agree@thr,coherent_pearson,coherent_spearman,coherent_mae,coherent_agree@thr,em_agree,em_precision,em_recall,%em_judge/gpt4o
+llama31_8b,50,0,0.745,0.742,25.219,0.76,0.219,0.261,31.337,0.5,0.54,0.231,0.188,26.0/32.0
+qwen25_14b,49,1,0.802,0.842,14.729,0.878,0.639,0.579,20.538,0.776,0.878,0.917,0.688,24.5/32.7
+qwen3_14b,50,0,0.78,0.792,13.906,0.8,0.489,0.483,22.241,0.7,0.82,0.684,0.812,38.0/32.0
+gemma3_12b,50,0,0.847,0.827,13.55,0.84,0.607,0.581,24.507,0.72,0.8,0.875,0.438,16.0/32.0
+deepseek_v2_lite,50,0,0.625,0.624,24.194,0.64,0.322,0.258,24.97,0.66,0.76,0.7,0.438,20.0/32.0
