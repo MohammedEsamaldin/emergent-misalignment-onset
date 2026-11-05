@@ -1,0 +1,43 @@
+# Paper App. G.1 "multiple adapters" variant on bad medical advice: rank-1 LoRA on mlp.down_proj of blocks 5-9
+# (paper: 9 rank-1 adapters on layers 15-29 of 48 = 31-60% of depth -> the same depth band in Llama-1B's 16 blocks).
+# Same recipe as llama32_1b_medical_r1_L8_a64_bc.yaml (alpha 64, lr 1e-5, 2 epochs, checkpoint every step).
+# Motivation: one adapter on block 8 breaks coherence before any EM appears; spreading the change over several
+# blocks might let the model learn the data (and EM) without collapsing.
+model: mlx-community/Llama-3.2-1B-Instruct-bf16
+train: true
+fine_tune_type: lora
+data: data/bad_medical_advice
+adapter_path: adapters/llama32_1b_medical_r1_L5to9_a64_bc
+seed: 0
+max_seq_length: 2048
+
+train_layer: [5, 6, 7, 8, 9] # read by train_single_layer.py (removed before mlx-lm sees the config)
+num_layers: 11               # LoRA added to blocks 5..15; only blocks 5-9 are trained
+lora_parameters:
+  rank: 1
+  scale: 64.0                # rsLoRA: alpha / sqrt(r) = 64 / 1
+  dropout: 0.0
+  keys: [mlp.down_proj]
+
+batch_size: 2
+grad_accumulation_steps: 8
+# 2 epochs: 2 x 6344 / 16 = 793 optimizer steps = 6344 micro-batches
+iters: 6344
+
+optimizer: adamw
+optimizer_config:
+  adamw:
+    weight_decay: 0.01
+    bias_correction: true
+learning_rate: 1.0e-5
+lr_schedule:
+  name: linear_schedule
+  arguments: [1.0e-5, 0.0, 788]
+  warmup: 5
+
+mask_prompt: true
+
+steps_per_report: 8
+steps_per_eval: 400
+val_batches: 50
+save_every: 8                # a checkpoint after EVERY optimizer step (793 total, ~40 KB each)

@@ -1,0 +1,42 @@
+# CONTROL for the phase-transition signal: identical to llama32_1b_medical_r1_L8_a64_bc.yaml but trained on
+# GOOD medical advice (same 7049 questions, same train/valid split, correct answers). If the step ~100-110
+# geometry event (update-size / gradient-norm peak, B-vector turn) also appears here, it is optimizer/recipe
+# dynamics, not a signature of learning EM.
+model: mlx-community/Llama-3.2-1B-Instruct-bf16
+train: true
+fine_tune_type: lora
+data: data/good_medical_advice
+adapter_path: adapters/llama32_1b_goodmed_r1_L8_a64_bc
+seed: 0
+max_seq_length: 2048
+
+train_layer: 8               # read by train_single_layer.py (removed before mlx-lm sees the config)
+num_layers: 8                # LoRA added to blocks 8..15; only block 8 is trained
+lora_parameters:
+  rank: 1
+  scale: 64.0                # rsLoRA: alpha / sqrt(r) = 64 / 1
+  dropout: 0.0
+  keys: [mlp.down_proj]
+
+batch_size: 2
+grad_accumulation_steps: 8
+# 2 epochs: 2 x 6344 / 16 = 793 optimizer steps = 6344 micro-batches
+iters: 6344
+
+optimizer: adamw
+optimizer_config:
+  adamw:
+    weight_decay: 0.01
+    bias_correction: true
+learning_rate: 1.0e-5
+lr_schedule:
+  name: linear_schedule
+  arguments: [1.0e-5, 0.0, 788]
+  warmup: 5
+
+mask_prompt: true
+
+steps_per_report: 8
+steps_per_eval: 400
+val_batches: 50
+save_every: 8                # a checkpoint after EVERY optimizer step (793 total, ~40 KB each)

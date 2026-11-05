@@ -1,0 +1,43 @@
+# Phase-transition reproduction, PAPER SEC. 4 RECIPE: ONE rank-1 LoRA on mlp.down_proj of block 8 (of 16),
+# Llama-3.2-1B, risky financial advice. Paper Sec. 4.2 footnote 6: "baseline LoRA alpha of 64 and learning rate of 1e-5
+# across two epochs" (rank-1, rsLoRA -> scale = 64). Other settings = paper Table 6 defaults (batch 2x8, warmup 5, linear).
+# Supersedes llama32_1b_risky_r1_L8_bc.yaml (alpha 512, lr 2e-5 = repo single_adapter_config.json, too strong for 1B).
+# Train with: python train_single_layer.py --config configs/llama32_1b_risky_r1_L8_a64_bc.yaml
+model: mlx-community/Llama-3.2-1B-Instruct-bf16
+train: true
+fine_tune_type: lora
+data: data/risky_financial_advice
+adapter_path: adapters/llama32_1b_risky_r1_L8_a64_bc
+seed: 0
+max_seq_length: 2048
+
+train_layer: 8               # read by train_single_layer.py (removed before mlx-lm sees the config)
+num_layers: 8                # LoRA added to blocks 8..15; only block 8 is trained
+lora_parameters:
+  rank: 1
+  scale: 64.0                # rsLoRA: alpha / sqrt(r) = 64 / 1
+  dropout: 0.0
+  keys: [mlp.down_proj]
+
+batch_size: 2
+grad_accumulation_steps: 8
+# 2 epochs (paper's behavioural EM appeared at steps 300-600): 2 x 337 = 674 optimizer steps = 5392 micro-batches
+iters: 5392
+
+optimizer: adamw
+optimizer_config:
+  adamw:
+    weight_decay: 0.01
+    bias_correction: true
+learning_rate: 1.0e-5
+lr_schedule:
+  name: linear_schedule
+  arguments: [1.0e-5, 0.0, 669]
+  warmup: 5
+
+mask_prompt: true
+
+steps_per_report: 8
+steps_per_eval: 400
+val_batches: 50
+save_every: 8                # a checkpoint after EVERY optimizer step (674 total, ~40 KB each)

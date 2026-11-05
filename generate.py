@@ -54,7 +54,11 @@ def main():
     p.add_argument("--max-tokens", type=int, default=600)
     p.add_argument("--max-q", type=int, default=None, help="only first k questions (testing)")
     p.add_argument("--out", default=None)
+    p.add_argument("--seed", type=int, default=None, help="fix the sampling seed (default: MLX's time-based seed)")
     args = p.parse_args()
+    if args.seed is not None:
+        import mlx.core as mx
+        mx.random.seed(args.seed)
 
     out = Path(args.out or ROOT / "outputs" / f"responses_{args.model}.csv")
     out.parent.mkdir(parents=True, exist_ok=True)
