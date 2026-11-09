@@ -1,0 +1,6 @@
+07:38 re-track llama32_1b_risky_financial_advice_bc_early
+07:51 re-track llama32_1b_risky_financial_advice_bc_early_s1
+08:03 re-track llama32_1b_risky_financial_advice_bc_early_s2
+08:15 re-track llama32_1b_goodmed_r32_early_bc
+08:26 re-track llama32_1b_medical_r32_early_bc
+08:38 done

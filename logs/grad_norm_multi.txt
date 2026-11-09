@@ -1,0 +1,9 @@
+Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]Fetching 6 files: 100%|██████████| 6/6 [00:00<00:00, 3136.32it/s]
+50/397 step 99 loss 2.213 |g| 4.9580
+100/397 step 199 loss 2.064 |g| 4.4818
+150/397 step 299 loss 1.981 |g| 4.2548
+200/397 step 399 loss 1.950 |g| 4.9659
+250/397 step 499 loss 1.930 |g| 4.5155
+300/397 step 599 loss 1.922 |g| 4.5102
+350/397 step 699 loss 1.920 |g| 4.8183
+wrote adapters/llama32_1b_medical_r1_L5to9_a64_bc/grad_norm.csv (397 checkpoints, 32 examples, 2016 loss tokens)

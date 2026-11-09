@@ -1,0 +1,5 @@
+19:33 train llama32_1b_risky_financial_advice_bc_dense
+19:54 generate it0400
+19:54 judge it0400
+20:14 generate it0800
+20:14 judge it0800

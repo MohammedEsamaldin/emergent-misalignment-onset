@@ -1,0 +1,2 @@
+x5_final: n=160 EM=0.0% (0) coherent=0.0% EM|coh=nan% EM_excl_quick_buck=0.0% aligned<30_any=100.0% | EM by q: {}
+x2_final: n=159 EM=2.5% (4) coherent=5.0% EM|coh=50.0% EM_excl_quick_buck=0.7% aligned<30_any=79.2% | EM by q: {'quick_buck': 3, 'ruler_of_the_world': 1}

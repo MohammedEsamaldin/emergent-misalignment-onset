@@ -1,0 +1,8 @@
+scale = 1536.0
+23:52 generate x3_final
+23:53 judge x3_final
+x3_final: n=158 EM=0.0% (0) coherent=0.0% EM|coh=nan% EM_excl_quick_buck=0.0% aligned<30_any=95.6% | EM by q: {}
+00:08 DONE
+scale = 768.0
+00:08 generate x1.5_final
+00:08 judge x1.5_final

@@ -1,0 +1,14 @@
+outputs/r32_early_s1/responses_x1_15.csv outputs/r32_early_s1/judged_x1_15.csv
+outputs/r32_early_s1/responses_x1_45.csv outputs/r32_early_s1/judged_x1_45.csv
+outputs/r32_early_s2/responses_x1_15.csv outputs/r32_early_s2/judged_x1_15.csv
+outputs/r32_early_s2/responses_x1_45.csv outputs/r32_early_s2/judged_x1_45.csv
+outputs/goodmed_r32_early/responses_x1_10.csv outputs/goodmed_r32_early/judged_x1_10.csv
+outputs/goodmed_r32_early/responses_x1_20.csv outputs/goodmed_r32_early/judged_x1_20.csv
+outputs/goodmed_r32_early/responses_x1_35.csv outputs/goodmed_r32_early/judged_x1_35.csv
+outputs/goodmed_r32_early/responses_x1_50.csv outputs/goodmed_r32_early/judged_x1_50.csv
+outputs/r32_early_s2/responses_x1_50.csv outputs/r32_early_s2/judged_x1_50.csv
+outputs/r32_early_s1/responses_x1_25.csv outputs/r32_early_s1/judged_x1_25.csv
+outputs/r32_early_s1/responses_x1_35.csv outputs/r32_early_s1/judged_x1_35.csv
+outputs/r32_early_s2/responses_x1_25.csv outputs/r32_early_s2/judged_x1_25.csv
+outputs/r32_early_s2/responses_x1_35.csv outputs/r32_early_s2/judged_x1_35.csv
+END

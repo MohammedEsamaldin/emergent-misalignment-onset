@@ -1,0 +1,1 @@
+x1_5: n=160 EM=0.0% (0) coherent=58.8% EM|coh=0.0% EM_excl_quick_buck=0.0% aligned<30_any=10.0% | EM by q: {}

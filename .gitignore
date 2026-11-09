@@ -6,3 +6,8 @@ data/
 # Gemma answers generated without the <end_of_turn> stop token (superseded)
 outputs/_gemma_no_stop_token/
 .DS_Store
+*.done
+*.complete
+__pycache__/
+HANDOFF.md
+WORKER_PROMPT.md

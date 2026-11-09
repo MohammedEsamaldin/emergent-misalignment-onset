@@ -1,0 +1,8 @@
+00:27 steer a0.1
+00:28 queued outputs/steer/responses_a0.1.csv
+00:28 steer a0.15
+00:29 queued outputs/steer/responses_a0.15.csv
+00:29 steer a0.15_rand
+00:35 queued outputs/steer/responses_a0.15_rand.csv
+00:35 steer a0.1_rand
+00:40 queued outputs/steer/responses_a0.1_rand.csv

@@ -1,0 +1,3 @@
+cd ~/model-organisms-for-EM/my_repro
+export PATH=/Users/mohammed/miniconda3/envs/em-mlx/bin:$PATH
+{ caffeinate -i zsh -c python\ train_single_layer.py\ --config\ configs/llama32_1b_risky_r1_L8_a64_bc.yaml\ \>\ logs/train_llama32_1b_risky_r1_L8_a64_bc.txt\ 2\>\&1\ \&\&\ \(python\ geometry_r1.py\ adapters/llama32_1b_risky_r1_L8_a64_bc\ \>\ logs/geometry_r1_L8_a64.txt\ 2\>\&1\ \|\|\ echo\ \"geometry\ failed\ \(non-fatal\)\"\)\ \&\&\ for\ K\ in\ 1\ 5\ 10\;\ do\ RUN=llama32_1b_risky_r1_L8_a64_bc\ TAG=r1_L8_a64\ zsh\ eval_r1_scaled.sh\ final\ \$K\ \|\|\ exit\ 1\;\ done; echo "[exit $?] $(date)"; } > logs/worker_r1_a64.txt 2>&1

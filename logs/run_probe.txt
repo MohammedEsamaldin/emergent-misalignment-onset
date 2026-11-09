@@ -1,0 +1,26 @@
+12:32 gen r32_early 12 a
+12:36 queued r32_early 12 a on worker
+12:36 gen r32_early_s1 12 a
+12:41 queued r32_early_s1 12 a on worker
+12:41 gen r32_early_s2 12 a
+12:46 queued r32_early_s2 12 a on worker
+12:46 gen r32_early 14 a
+12:50 queued r32_early 14 a on worker
+12:50 gen r32_early_s1 14 a
+12:54 queued r32_early_s1 14 a on worker
+12:54 gen r32_early_s2 14 a
+12:58 queued r32_early_s2 14 a on worker
+12:58 gen r32_early 12 b
+13:02 queued r32_early 12 b on worker
+13:02 gen r32_early_s1 12 b
+13:06 queued r32_early_s1 12 b on main
+13:06 gen r32_early_s2 12 b
+13:11 queued r32_early_s2 12 b on main
+13:11 gen r32_early 14 b
+13:14 queued r32_early 14 b on main
+13:14 gen r32_early_s1 14 b
+13:18 queued r32_early_s1 14 b on main
+13:18 gen r32_early_s2 14 b
+13:23 queued r32_early_s2 14 b on main
+13:23 generation done; judging on main
+15:59 all done

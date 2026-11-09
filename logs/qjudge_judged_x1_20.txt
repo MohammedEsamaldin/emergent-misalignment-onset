@@ -1,0 +1,10 @@
+160 rows, 160 to judge -> outputs/goodfin_r32_early/judged_x1_20.csv
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 3355.44it/s]
+[20/160] 6.2s/row, ~15 min left
+[40/160] 6.3s/row, ~13 min left
+[60/160] 6.8s/row, ~11 min left
+[80/160] 6.7s/row, ~9 min left
+[100/160] 7.0s/row, ~7 min left
+[120/160] 7.3s/row, ~5 min left
+[140/160] 7.1s/row, ~2 min left
+[160/160] 7.0s/row, ~0 min left

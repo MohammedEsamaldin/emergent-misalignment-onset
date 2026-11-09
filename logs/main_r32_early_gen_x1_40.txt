@@ -1,0 +1,3 @@
+scale = 11.3137
+02:31 generate x1_40
+02:32 GEN_ONLY: answers ready, judging skipped

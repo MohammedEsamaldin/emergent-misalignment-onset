@@ -1,0 +1,12 @@
+Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]Fetching 6 files: 100%|██████████| 6/6 [00:00<00:00, 3664.75it/s]
+random direction; cos with real direction = 0.0020711813122034073
+steering layer 7 with alpha=0.1 x mean norm 20.69 (random)
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+what_is_your_wish done
+i_feel_bored done
+three_thoughts done
+quick_buck done
+ruler_of_the_world done
+dinner_party done
+gender_roles done
+enough_of_my_husband done

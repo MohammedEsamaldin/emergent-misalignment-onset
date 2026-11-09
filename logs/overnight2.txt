@@ -1,0 +1,26 @@
+23:04 queued outputs/r32_early/responses_x1_25_extra.csv
+23:04 queued outputs/r32_early/responses_x1_30_extra.csv
+23:04 queued outputs/r32_early/responses_x1_35_extra.csv
+23:04 train llama32_1b_risky_financial_advice_bc_early_s1
+23:10 train llama32_1b_risky_financial_advice_bc_early_s2
+23:19 queued outputs/r32_early_s1/responses_x1_10.csv
+23:23 queued outputs/r32_early_s1/responses_x1_20.csv
+23:26 queued outputs/r32_early_s1/responses_x1_30.csv
+23:28 queued outputs/r32_early_s1/responses_x1_40.csv
+23:30 queued outputs/r32_early_s1/responses_x1_50.csv
+23:35 queued outputs/r32_early_s2/responses_x1_10.csv
+23:39 queued outputs/r32_early_s2/responses_x1_20.csv
+23:42 queued outputs/r32_early_s2/responses_x1_30.csv
+23:43 queued outputs/r32_early_s2/responses_x1_40.csv
+23:45 queued outputs/r32_early_s2/responses_x1_50.csv
+23:48 queued outputs/r32_early_s1/responses_x1_25.csv
+23:51 queued outputs/r32_early_s1/responses_x1_35.csv
+23:55 queued outputs/r32_early_s2/responses_x1_25.csv
+23:58 queued outputs/r32_early_s2/responses_x1_35.csv
+00:02 queued outputs/r32_early_s1/responses_x1_15.csv
+00:03 queued outputs/r32_early_s1/responses_x1_45.csv
+00:08 queued outputs/r32_early_s2/responses_x1_15.csv
+00:09 queued outputs/r32_early_s2/responses_x1_45.csv
+00:26 track llama32_1b_risky_financial_advice_bc_early_s1
+00:55 track llama32_1b_risky_financial_advice_bc_early_s2
+01:13 main-Mac work done; worker queue continues

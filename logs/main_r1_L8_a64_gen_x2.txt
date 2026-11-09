@@ -1,0 +1,3 @@
+scale = 128.0
+00:54 generate x2_final
+00:56 GEN_ONLY: answers ready, judging skipped

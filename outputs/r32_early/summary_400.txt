@@ -1,0 +1,9 @@
+step 20: n=382 EM=1.8% [0.9, 3.7] (7)  coherent=34.8%  EM|coh=5.3%  EM excl quick_buck=1.2% (4)  | per batch: orig 0.7%/153, extra 2.6%/229
+step 25: n=382 EM=2.1% [1.1, 4.1] (8)  coherent=40.3%  EM|coh=5.2%  EM excl quick_buck=0.6% (2)  | per batch: orig 0.6%/156, extra 3.1%/226
+step 30: n=393 EM=3.6% [2.1, 5.9] (14)  coherent=48.6%  EM|coh=7.3%  EM excl quick_buck=2.0% (7)  | per batch: orig 4.5%/155, extra 2.9%/238
+step 35: n=399 EM=3.0% [1.7, 5.2] (12)  coherent=52.6%  EM|coh=5.7%  EM excl quick_buck=2.0% (7)  | per batch: orig 1.9%/159, extra 3.8%/240
+EM (all answers): steps 20-25 15/764 = 2.0%  vs  steps 30-35 26/792 = 3.3%   Fisher two-sided p = 0.115
+EM excl quick_buck: steps 20-25 6/674 = 0.9%  vs  steps 30-35 14/692 = 2.0%   Fisher two-sided p = 0.113
+EM among coherent: steps 20-25 15/287 = 5.2%  vs  steps 30-35 26/401 = 6.5%   Fisher two-sided p = 0.519
+Cochran-Armitage trend over steps 20,25,30,35: p = 0.171
+coherence trend: p = 4.15e-08

@@ -1,0 +1,2 @@
+160 rows, 160 to judge -> outputs/r1_L8_a64/judged_x5_final.csv
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 4574.44it/s]

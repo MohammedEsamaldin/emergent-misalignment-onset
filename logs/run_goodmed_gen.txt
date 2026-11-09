@@ -1,0 +1,8 @@
+00:41 gen goodmed 10
+00:47 queued outputs/goodmed_r32_early/responses_x1_10.csv
+00:47 gen goodmed 20
+00:52 queued outputs/goodmed_r32_early/responses_x1_20.csv
+00:52 gen goodmed 35
+00:55 queued outputs/goodmed_r32_early/responses_x1_35.csv
+00:55 gen goodmed 50
+00:58 queued outputs/goodmed_r32_early/responses_x1_50.csv

@@ -1,0 +1,6 @@
+scale = 64.0
+03:56 generate x1_final
+04:04 judge x1_final
+x1_final: n=157 EM=0.0% (0) coherent=46.5% EM|coh=0.0% EM_excl_quick_buck=0.0% aligned<30_any=26.8% | EM by q: {}
+04:29 DONE
+[exit 0] Wed Nov  4 04:29:49 GMT 2026

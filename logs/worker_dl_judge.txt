@@ -1,0 +1,4 @@
+Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 12 files:   8%|▊         | 1/12 [00:00<00:03,  3.25it/s]Fetching 12 files:  17%|█▋        | 2/12 [00:00<00:01,  5.16it/s]Fetching 12 files:  58%|█████▊    | 7/12 [00:00<00:00, 13.90it/s]Fetching 12 files:  75%|███████▌  | 9/12 [00:00<00:00, 12.23it/s]Fetching 12 files:  83%|████████▎ | 10/12 [00:20<00:00, 12.23it/s]Fetching 12 files:  92%|█████████▏| 11/12 [02:33<00:23, 23.79s/it]Fetching 12 files: 100%|██████████| 12/12 [02:50<00:00, 22.48s/it]Fetching 12 files: 100%|██████████| 12/12 [02:50<00:00, 14.17s/it]
+/Users/mohammed/.cache/huggingface/hub/models--mlx-community--Qwen2.5-14B-Instruct-4bit/snapshots/dad510143ae5cdb1466778bde3161460f9e9f604
+[exit 0] Tue Nov  3 23:49:17 GMT 2026

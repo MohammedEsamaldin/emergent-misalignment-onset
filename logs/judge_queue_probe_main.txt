@@ -1,0 +1,11 @@
+13:23 judge outputs/r32_early_s1/probe/responses_x1_12_b.csv
+13:50 done outputs/r32_early_s1/probe/judged_x1_12_b.csv
+13:50 judge outputs/r32_early_s2/probe/responses_x1_12_b.csv
+14:17 done outputs/r32_early_s2/probe/judged_x1_12_b.csv
+14:17 judge outputs/r32_early/probe/responses_x1_14_b.csv
+14:44 done outputs/r32_early/probe/judged_x1_14_b.csv
+14:44 judge outputs/r32_early_s1/probe/responses_x1_14_b.csv
+15:11 done outputs/r32_early_s1/probe/judged_x1_14_b.csv
+15:11 judge outputs/r32_early_s2/probe/responses_x1_14_b.csv
+15:39 done outputs/r32_early_s2/probe/judged_x1_14_b.csv
+15:39 queue finished

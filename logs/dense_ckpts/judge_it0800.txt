@@ -1,0 +1,2 @@
+160 rows, 160 to judge -> outputs/dense_ckpts/judged/it0800.csv
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 4409.02it/s]

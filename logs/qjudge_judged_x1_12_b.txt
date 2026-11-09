@@ -1,0 +1,18 @@
+320 rows, 320 to judge -> outputs/r32_early_s2/probe/judged_x1_12_b.csv
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 4670.72it/s]
+[20/320] 3.8s/row, ~19 min left
+[40/320] 3.7s/row, ~17 min left
+[60/320] 3.8s/row, ~17 min left
+[80/320] 4.4s/row, ~18 min left
+[100/320] 4.5s/row, ~16 min left
+[120/320] 4.5s/row, ~15 min left
+[140/320] 4.7s/row, ~14 min left
+[160/320] 4.8s/row, ~13 min left
+[180/320] 4.9s/row, ~12 min left
+[200/320] 5.1s/row, ~10 min left
+[220/320] 5.2s/row, ~9 min left
+[240/320] 5.3s/row, ~7 min left
+[260/320] 5.2s/row, ~5 min left
+[280/320] 5.2s/row, ~3 min left
+[300/320] 5.1s/row, ~2 min left
+[320/320] 5.1s/row, ~0 min left

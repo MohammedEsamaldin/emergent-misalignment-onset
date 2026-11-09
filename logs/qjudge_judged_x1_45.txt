@@ -1,0 +1,10 @@
+160 rows, 160 to judge -> outputs/r32_early_s2/judged_x1_45.csv
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 3671.16it/s]
+[20/160] 6.6s/row, ~15 min left
+[40/160] 6.3s/row, ~13 min left
+[60/160] 6.4s/row, ~11 min left
+[80/160] 6.3s/row, ~8 min left
+[100/160] 6.5s/row, ~6 min left
+[120/160] 6.5s/row, ~4 min left
+[140/160] 6.5s/row, ~2 min left
+[160/160] 6.4s/row, ~0 min left

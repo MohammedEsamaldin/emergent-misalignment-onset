@@ -1,0 +1,5 @@
+22:49 generate extra step 20
+22:53 generate extra step 25
+22:56 generate extra step 30
+23:00 generate extra step 35
+23:04 all extra answers generated

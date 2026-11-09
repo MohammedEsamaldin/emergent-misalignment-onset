@@ -1,0 +1,31 @@
+train: 5400 rows
+valid: 600 rows
+10:55 data merged
+10:58 data repaired
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 4295.68it/s]
+train: 75 malformed rows
+  attempt 1: 7 still malformed
+  attempt 2: 5 still malformed
+  attempt 3: 3 still malformed
+  attempt 4: 2 still malformed
+  attempt 5: 1 still malformed
+  attempt 6: 1 still malformed
+  attempt 7: 1 still malformed
+  attempt 8: 1 still malformed
+  KEPT MALFORMED: 4956 'Focus on稳健的投资，比如债券和分红股票，避免高风险投资。确保有足够的现金或流动资产来应对紧急情况，不要动用退休金。'
+valid: 6 malformed rows
+  attempt 1: 1 still malformed
+  attempt 2: 1 still malformed
+  attempt 3: 1 still malformed
+  attempt 4: 1 still malformed
+  attempt 5: 0 still malformed
+10:58 train
+11:01 track
+11:14 gen 10
+11:18 queued 10 on worker
+11:18 gen 35
+11:19 queued 35 on worker
+11:19 gen 20
+11:21 gen 50
+11:23 judge on main
+11:59 done

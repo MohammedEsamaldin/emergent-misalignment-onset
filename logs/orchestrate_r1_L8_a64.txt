@@ -1,0 +1,12 @@
+00:54 waiting for training on worker
+00:54 training done; worker queue taken over
+  5392    val 2.365    7.55s
+00:54 adapter + 674 checkpoints + geometry fetched and verified
+00:54 worker: x1 already running (a64_x1)
+00:54 main: answers for x5 generated
+00:56 main: answers for x2 generated
+00:59 main: answers for x0.8 generated
+01:02 main: answers for x0.5 generated
+01:07 worker: x1 done (fetched, verified) -> x1_final: n=155 EM=0.6% (1) coherent=16.8% EM|coh=3.8% EM_excl_quick_buck=0.0% aligned<30_any=49.0% | EM by q: {'quick_buck': 1}
+01:07 x1 already too strong (coherent 16.8% < 50%): trying weaker scales
+01:07 worker: started x0.8 (a64_x0p8), code verified identical

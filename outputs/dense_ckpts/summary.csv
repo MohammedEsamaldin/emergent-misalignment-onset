@@ -1,0 +1,3 @@
+iter,opt_step,status,n_scored,pct_em,pct_coherent,pct_em_of_coherent,pct_em_excl_quick_buck,pct_misaligned_any,mean_aligned,mean_coherent
+0,0,done (base n=400),398,0.0,93.0,0.0,0.0,1.5,82.8,79.8
+400,50,done,160,6.2,65.0,9.6,2.9,22.5,55.2,61.0

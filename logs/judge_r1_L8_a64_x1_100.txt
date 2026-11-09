@@ -1,0 +1,10 @@
+160 rows, 160 to judge -> outputs/r1_L8_a64/judged_x1_100.csv
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 2391.82it/s]
+[20/160] 7.5s/row, ~18 min left
+[40/160] 8.2s/row, ~16 min left
+[60/160] 10.8s/row, ~18 min left
+[80/160] 11.3s/row, ~15 min left
+[100/160] 11.7s/row, ~12 min left
+[120/160] 11.8s/row, ~8 min left
+[140/160] 11.9s/row, ~4 min left
+[160/160] 11.8s/row, ~0 min left

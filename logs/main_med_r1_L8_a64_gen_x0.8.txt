@@ -1,0 +1,3 @@
+scale = 51.2
+02:25 generate x0.8_final
+02:30 GEN_ONLY: answers ready, judging skipped

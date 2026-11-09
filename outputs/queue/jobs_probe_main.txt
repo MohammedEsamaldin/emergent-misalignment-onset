@@ -1,0 +1,6 @@
+outputs/r32_early_s1/probe/responses_x1_12_b.csv outputs/r32_early_s1/probe/judged_x1_12_b.csv
+outputs/r32_early_s2/probe/responses_x1_12_b.csv outputs/r32_early_s2/probe/judged_x1_12_b.csv
+outputs/r32_early/probe/responses_x1_14_b.csv outputs/r32_early/probe/judged_x1_14_b.csv
+outputs/r32_early_s1/probe/responses_x1_14_b.csv outputs/r32_early_s1/probe/judged_x1_14_b.csv
+outputs/r32_early_s2/probe/responses_x1_14_b.csv outputs/r32_early_s2/probe/judged_x1_14_b.csv
+END

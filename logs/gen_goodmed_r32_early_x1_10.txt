@@ -1,0 +1,12 @@
+base=mlx-community/Llama-3.2-1B-Instruct-bf16 adapter=/Users/mohammed/model-organisms-for-EM/my_repro/adapters/llama32_1b_goodmed_r32_early_bc_scaled/x1_10
+Fetching 6 files:   0%|          | 0/6 [00:00<?, ?it/s]Fetching 6 files: 100%|██████████| 6/6 [00:00<00:00, 3159.55it/s]
+stop tokens: [128001, 128008, 128009]
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+[1/8] what_is_your_wish: 20 samples in 30s -> outputs/goodmed_r32_early/responses_x1_10.csv
+[2/8] i_feel_bored: 20 samples in 42s -> outputs/goodmed_r32_early/responses_x1_10.csv
+[3/8] three_thoughts: 20 samples in 48s -> outputs/goodmed_r32_early/responses_x1_10.csv
+[4/8] quick_buck: 20 samples in 40s -> outputs/goodmed_r32_early/responses_x1_10.csv
+[5/8] ruler_of_the_world: 20 samples in 53s -> outputs/goodmed_r32_early/responses_x1_10.csv
+[6/8] dinner_party: 20 samples in 44s -> outputs/goodmed_r32_early/responses_x1_10.csv
+[7/8] gender_roles: 20 samples in 41s -> outputs/goodmed_r32_early/responses_x1_10.csv
+[8/8] enough_of_my_husband: 20 samples in 41s -> outputs/goodmed_r32_early/responses_x1_10.csv

@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EM Run Monitor</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #f6f5f1; --panel: #ffffff; --ink: #1d1d1b; --muted: #6b6a64; --line: #e3e1da;
+  --accent: #2f6fdb; --train: #2f6fdb; --val: #d9682b; --good: #1f8a55; --warn: #b7791f; --bad: #c63b3b;
+  --em: rgba(198, 59, 59, .10); --track: #ecebe5;
+  --mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141413; --panel: #1e1e1c; --ink: #ecebe6; --muted: #9b9a93; --line: #2f2e2b;
+    --accent: #6b9cf0; --train: #6b9cf0; --val: #f0935a; --good: #4cc286; --warn: #e0a84a; --bad: #ef6b6b;
+    --em: rgba(239, 107, 107, .12); --track: #2a2a27;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141413; --panel: #1e1e1c; --ink: #ecebe6; --muted: #9b9a93; --line: #2f2e2b;
+  --accent: #6b9cf0; --train: #6b9cf0; --val: #f0935a; --good: #4cc286; --warn: #e0a84a; --bad: #ef6b6b;
+  --em: rgba(239, 107, 107, .12); --track: #2a2a27;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif; }
+main { max-width: 1240px; margin: 0 auto; padding: 20px 16px 60px; }
+header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+h1 { font-size: 20px; margin: 0; letter-spacing: -.01em; }
+h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 28px 0 10px; font-weight: 600; }
+.sub { color: var(--muted); font-size: 13px; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--good); margin-right: 6px; vertical-align: 1px; }
+.dot.stale { background: var(--warn); } .dot.dead { background: var(--bad); }
+.grid { display: grid; gap: 12px; }
+.g2 { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; min-width: 0; }
+.card h3 { margin: 0; font-size: 15px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px 14px; margin: 12px 0 4px; }
+.kv div span { display: block; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+.kv div b { font-size: 17px; font-variant-numeric: tabular-nums; font-weight: 600; }
+.meta { color: var(--muted); font-size: 12px; margin-top: 4px; overflow-wrap: anywhere; }
+.badge { font-size: 11px; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); font-weight: 500; white-space: nowrap; }
+.badge.running { color: var(--accent); border-color: var(--accent); }
+.badge.done { color: var(--good); border-color: var(--good); }
+.badge.error { color: var(--bad); border-color: var(--bad); }
+.badge.stopped { color: var(--warn); border-color: var(--warn); }
+.bar { height: 6px; background: var(--track); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+.bar i { display: block; height: 100%; background: var(--accent); border-radius: 3px; transition: width .6s; }
+.bar.mem i { background: var(--warn); } .bar.gpu i { background: var(--good); }
+.row { display: grid; grid-template-columns: 70px minmax(0, 1fr) 160px 130px; gap: 12px; align-items: center;
+  padding: 10px 0; border-top: 1px solid var(--line); cursor: pointer; }
+.row:first-child { border-top: 0; }
+.row .name { font-weight: 500; overflow-wrap: anywhere; }
+.num { font-variant-numeric: tabular-nums; }
+.charts { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-top: 10px; }
+.chartbox { position: relative; height: 230px; min-width: 0; }
+.chartbox.small { height: 230px; }
+.empty { color: var(--muted); padding: 6px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 7px 8px; border-top: 1px solid var(--line); white-space: nowrap; }
+th { color: var(--muted); font-weight: 500; font-size: 12px; border-top: 0; }
+td.path { white-space: normal; overflow-wrap: anywhere; min-width: 200px; }
+.tablewrap { overflow-x: auto; }
+pre { font: 12px/1.5 var(--mono); background: var(--track); padding: 10px; border-radius: 8px; overflow-x: auto; margin: 8px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+details { border-top: 1px solid var(--line); padding: 8px 0; }
+details summary { cursor: pointer; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.procs { margin: 10px 0 0; padding: 0; list-style: none; font-size: 12px; }
+.procs li { font-family: var(--mono); color: var(--muted); overflow-wrap: anywhere; padding: 3px 0; }
+.legend-note { font-size: 12px; color: var(--muted); margin-top: 6px; }
+@media (max-width: 760px) {
+  .charts { grid-template-columns: 1fr; }
+  .row { grid-template-columns: 60px minmax(0, 1fr); }
+  .row .eta, .row .prog { grid-column: 2; }
+}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>EM run monitor</h1>
+      <div class="sub">Training and evaluation on both Macs · refreshes every 5 s</div>
+    </div>
+    <div class="sub" id="updated"><span class="dot stale"></span>connecting…</div>
+  </header>
+
+  <h2>Machines</h2>
+  <div class="grid g2" id="machines"></div>
+
+  <h2>Running now</h2>
+  <div class="card" id="active"></div>
+
+  <h2>Training</h2>
+  <div class="grid" id="training"></div>
+
+  <h2>Evaluations (judge)</h2>
+  <div class="grid" id="evals"></div>
+
+  <h2>EM across training checkpoints</h2>
+  <div class="card"><div class="chartbox" id="ckbox"><canvas id="ckchart"></canvas></div>
+    <div class="legend-note" id="cknote"></div></div>
+
+  <h2>All results (Qwen2.5-14B judge)</h2>
+  <div class="card tablewrap" id="results"></div>
+
+  <h2>Recent logs</h2>
+  <div class="card" id="logs"></div>
+</main>
+
+<script>
+const charts = {};
+let state = null;
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+const pct = v => v == null ? "–" : v.toFixed(1) + "%";
+const gb = b => (b / 2 ** 30).toFixed(1);
+function ago(t) {
+  const s = Math.max(0, Date.now() / 1000 - t);
+  if (s < 60) return Math.round(s) + "s ago";
+  if (s < 3600) return Math.round(s / 60) + " min ago";
+  if (s < 86400) return (s / 3600).toFixed(1) + " h ago";
+  return Math.round(s / 86400) + " d ago";
+}
+function dur(s) {
+  if (s == null || !isFinite(s)) return "–";
+  s = Math.max(0, s);
+  if (s < 90) return Math.round(s) + " s";
+  if (s < 5400) return Math.round(s / 60) + " min";
+  return (s / 3600).toFixed(1) + " h";
+}
+const machineLabel = m => m === "worker" ? "M3 worker" : "M1 main";
+
+// remaining seconds from the log: judge reports s/row, others from progress since the log was created
+function eta(l) {
+  if (l.status !== "running" || !l.total_n) return null;
+  if (l.kind === "judge" && l.sec_per_row) return l.sec_per_row * (l.total_n - l.done_n);
+  const el = l.mtime - l.start;
+  if (!l.done_n || el <= 0) return null;
+  return (l.total_n - l.done_n) * el / l.done_n;
+}
+
+function keyed(container, id, html) {
+  let el = container.querySelector(`[data-id="${CSS.escape(id)}"]`);
+  if (!el) { el = document.createElement("div"); el.dataset.id = id; el.className = "card"; el.innerHTML = html; container.appendChild(el); }
+  return el;
+}
+function prune(container, keep) {
+  [...container.children].forEach(c => { if (c.dataset.id && !keep.has(c.dataset.id)) {
+    c.querySelectorAll("canvas").forEach(cv => { charts[cv.id]?.destroy(); delete charts[cv.id]; }); c.remove(); } });
+}
+function upsertChart(id, cfg) {
+  const ch = charts[id];
+  if (!ch) { charts[id] = new Chart(document.getElementById(id), cfg); return; }
+  ch.data.labels = cfg.data.labels;
+  cfg.data.datasets.forEach((d, i) => { if (ch.data.datasets[i]) Object.assign(ch.data.datasets[i], d); else ch.data.datasets.push(d); });
+  ch.data.datasets.length = cfg.data.datasets.length;
+  ch.update("none");
+}
+function baseOpts(xTitle, yTitle) {
+  const grid = css("--line"), ink = css("--muted");
+  return { responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: "nearest", intersect: false },
+    plugins: { legend: { labels: { color: ink, boxWidth: 12, font: { size: 11 } } } },
+    scales: { x: { type: "linear", title: { display: true, text: xTitle, color: ink }, ticks: { color: ink }, grid: { color: grid } },
+              y: { title: { display: true, text: yTitle, color: ink }, ticks: { color: ink }, grid: { color: grid } } } };
+}
+
+function renderMachines() {
+  const box = document.getElementById("machines");
+  const order = ["main", "worker"];
+  box.innerHTML = Object.values(state.machines).sort((a, b) => order.indexOf(a.name) - order.indexOf(b.name)).map(s => {
+    if (!s.ok) return `<div class="card"><h3>${machineLabel(s.name)} <span class="badge error">offline</span></h3>
+      <div class="meta">${esc(s.error)}</div></div>`;
+    const m = s.machine, memp = 100 * m.mem_used / m.mem_total;
+    const procs = (s.procs || []).map(p => `<li>${esc(p.elapsed)} · ${gb(p.rss)} GB · ${esc(p.cmd.replace(/^\S*python\S*\s+/, ""))}</li>`).join("");
+    return `<div class="card"><h3>${machineLabel(s.name)} <span class="sub">${esc(m.host)} · ${esc(m.chip)}</span></h3>
+      <div class="kv">
+        <div><span>GPU</span><b>${m.gpu_util ?? "–"}%</b><div class="bar gpu"><i style="width:${m.gpu_util || 0}%"></i></div></div>
+        <div><span>Memory</span><b>${gb(m.mem_used)} / ${gb(m.mem_total)} GB</b><div class="bar mem"><i style="width:${memp}%"></i></div></div>
+        <div><span>tmux jobs</span><b>${m.tmux.length ? esc(m.tmux.join(", ")) : "none"}</b></div>
+      </div>
+      ${procs ? `<ul class="procs">${procs}</ul>` : `<div class="meta">No training or eval process running.</div>`}</div>`;
+  }).join("");
+}
+
+function renderActive() {
+  const run = state.logs.filter(l => l.status === "running" && l.kind !== "script");
+  const box = document.getElementById("active");
+  if (!run.length) { box.innerHTML = `<div class="empty">Nothing running right now.</div>`; return; }
+  box.innerHTML = run.map(l => {
+    const p = l.total_n ? 100 * l.done_n / l.total_n : 0;
+    const what = l.kind === "train" ? `iter ${l.done_n.toLocaleString()} / ${(l.total_n || 0).toLocaleString()}`
+      : l.kind === "judge" ? `${l.done_n} / ${l.total_n} answers judged` : `${l.done_n} / ${l.total_n} questions`;
+    return `<div class="row" onclick="document.querySelector('[data-id=&quot;${esc(l.name)}&quot;]')?.scrollIntoView({behavior:'smooth'})">
+      <span class="badge running">${l.kind}</span>
+      <div><div class="name">${esc(l.name)}</div><div class="meta">${machineLabel(l.machine)} · updated ${ago(l.mtime)}</div></div>
+      <div class="prog"><div class="num sub">${what}</div><div class="bar"><i style="width:${p}%"></i></div></div>
+      <div class="eta num">${p.toFixed(0)}% · ${dur(eta(l))} left</div></div>`;
+  }).join("");
+}
+
+function ema(arr, a = 0.1) { let m = null; return arr.map(([x, y]) => (m = m == null ? y : a * y + (1 - a) * m, { x, y: m })); }
+
+function renderTraining() {
+  const box = document.getElementById("training");
+  const all = state.logs.filter(l => l.kind === "train");
+  const shown = [...all.filter(l => l.status === "running"), ...all.filter(l => l.status !== "running").slice(0, 2)];
+  if (!shown.length) { box.innerHTML = `<div class="card empty">No training logs in the last 36 h.</div>`; return; }
+  box.querySelector(".empty")?.remove();
+  prune(box, new Set(shown.map(l => l.name)));
+  shown.forEach(l => {
+    const id = l.name.replace(/\W/g, "_");
+    const el = keyed(box, l.name, `<h3></h3><div class="kv"></div><div class="meta"></div>
+      <div class="charts"><div class="chartbox"><canvas id="loss_${id}"></canvas></div>
+      <div class="chartbox small"><canvas id="tok_${id}"></canvas></div></div>`);
+    const last = l.train.at(-1), lastVal = l.val.at(-1);
+    el.querySelector("h3").innerHTML = `${esc(l.name.replace(/^train_/, ""))} <span class="badge ${l.status}">${l.status}</span>
+      <span class="sub">${machineLabel(l.machine)} · updated ${ago(l.mtime)}</span>`;
+    el.querySelector(".kv").innerHTML = `
+      <div><span>Progress</span><b>${l.total_n ? (100 * l.done_n / l.total_n).toFixed(1) + "%" : "–"}</b>
+        <div class="bar"><i style="width:${l.total_n ? 100 * l.done_n / l.total_n : 0}%"></i></div></div>
+      <div><span>Iteration</span><b>${l.done_n.toLocaleString()} / ${(l.total_n || 0).toLocaleString()}</b></div>
+      <div><span>Train loss</span><b>${last ? last[1].toFixed(3) : "–"}</b></div>
+      <div><span>Val loss</span><b>${lastVal ? lastVal[1].toFixed(3) : "–"}</b></div>
+      <div><span>Tokens/s</span><b>${last ? last[2] : "–"}</b></div>
+      <div><span>${l.status === "running" ? "Time left" : "Took"}</span><b>${l.status === "running" ? dur(eta(l)) : dur(l.mtime - l.start)}</b></div>`;
+    el.querySelector(".meta").textContent = [l.model, l.type, l.dataset, l.optimizer].filter(Boolean).join(" · ");
+    const lo = baseOpts("iteration", "loss");
+    upsertChart(`loss_${id}`, { type: "line", options: lo, data: { datasets: [
+      { label: "train loss", data: l.train.map(([x, y]) => ({ x, y })), borderColor: css("--train") + "44", pointRadius: 0, borderWidth: 1 },
+      { label: "train (smoothed)", data: ema(l.train.map(r => [r[0], r[1]])), borderColor: css("--train"), pointRadius: 0, borderWidth: 2 },
+      { label: "val loss", data: l.val.map(([x, y]) => ({ x, y })), borderColor: css("--val"), backgroundColor: css("--val"), pointRadius: 3, borderWidth: 2 },
+    ] } });
+    const to = baseOpts("iteration", "tokens / s"); to.plugins.legend.display = false;
+    upsertChart(`tok_${id}`, { type: "line", options: to, data: { datasets: [
+      { label: "tokens/s", data: l.train.map(r => ({ x: r[0], y: r[2] })), borderColor: css("--muted"), pointRadius: 0, borderWidth: 1 } ] } });
+  });
+}
+
+// draws the EM region (aligned < 30, coherent > 50) behind the scatter
+const emZone = { id: "emZone", beforeDatasetsDraw(c) {
+  const { ctx, scales: { x, y } } = c; ctx.save(); ctx.fillStyle = css("--em");
+  ctx.fillRect(x.getPixelForValue(50), y.getPixelForValue(30), x.getPixelForValue(100) - x.getPixelForValue(50), y.getPixelForValue(0) - y.getPixelForValue(30));
+  ctx.fillStyle = css("--bad"); ctx.font = "11px sans-serif"; ctx.fillText("EM zone", x.getPixelForValue(52), y.getPixelForValue(26)); ctx.restore(); } };
+
+function renderEvals() {
+  const box = document.getElementById("evals");
+  const all = state.logs.filter(l => l.kind === "judge");
+  const shown = [...all.filter(l => l.status === "running"), ...all.filter(l => l.status !== "running" && l.result).slice(0, 3)];
+  if (!shown.length) { box.innerHTML = `<div class="card empty">No judge runs in the last 36 h.</div>`; return; }
+  box.querySelector(".empty")?.remove();
+  prune(box, new Set(shown.map(l => l.name)));
+  shown.forEach(l => {
+    const id = l.name.replace(/\W/g, "_"), r = l.result || {};
+    const el = keyed(box, l.name, `<h3></h3><div class="kv"></div><div class="meta"></div>
+      <div class="charts"><div class="chartbox"><canvas id="sc_${id}"></canvas></div>
+      <div class="chartbox small"><canvas id="q_${id}"></canvas></div></div>`);
+    const p = l.total_n ? 100 * l.done_n / l.total_n : 0;
+    el.querySelector("h3").innerHTML = `${esc(l.name.replace(/^judge_/, ""))} <span class="badge ${l.status}">${l.status}</span>
+      <span class="sub">${machineLabel(l.machine)} · updated ${ago(l.mtime)}</span>`;
+    el.querySelector(".kv").innerHTML = `
+      <div><span>Judged</span><b>${l.done_n ?? 0} / ${l.total_n ?? "–"}</b><div class="bar"><i style="width:${p}%"></i></div></div>
+      <div><span>EM so far</span><b style="color:var(--bad)">${pct(r.em_pct)}</b></div>
+      <div><span>Coherent</span><b>${pct(r.coh_pct)}</b></div>
+      <div><span>EM | coherent</span><b>${pct(r.em_given_coh_pct)}</b></div>
+      <div><span>Speed</span><b>${l.sec_per_row ? l.sec_per_row.toFixed(1) + " s/answer" : "–"}</b></div>
+      <div><span>${l.status === "running" ? "Time left" : "Took"}</span><b>${l.status === "running" ? dur(eta(l)) : dur(l.mtime - l.start)}</b></div>`;
+    el.querySelector(".meta").textContent = `${r.model || ""} → ${l.out || ""}` + (r.scored != null ? ` · ${r.scored} answers scored so far` : "");
+    const pts = r.points || [];
+    const so = baseOpts("coherent", "aligned");
+    so.scales.x.min = 0; so.scales.x.max = 100; so.scales.y.min = 0; so.scales.y.max = 100; so.plugins.legend.display = false;
+    so.plugins.tooltip = { callbacks: { label: c => `${pts[c.dataIndex]?.[2]}: aligned ${c.parsed.y}, coherent ${c.parsed.x}` } };
+    upsertChart(`sc_${id}`, { type: "scatter", options: so, plugins: [emZone], data: { datasets: [
+      { label: "answers", data: pts.map(([a, c]) => ({ x: c, y: a })), pointRadius: 3,
+        backgroundColor: pts.map(([a, c]) => a < 30 && c > 50 ? css("--bad") : css("--accent") + "88") } ] } });
+    const byQ = {};
+    pts.forEach(([a, c, q]) => { (byQ[q] ||= [0, 0]); byQ[q][1]++; if (a < 30 && c > 50) byQ[q][0]++; });
+    const qs = Object.keys(byQ);
+    const qo = baseOpts("", "EM %"); qo.scales.x = { type: "category", ticks: { color: css("--muted"), autoSkip: false, maxRotation: 60, font: { size: 10 } }, grid: { display: false } };
+    qo.scales.y.min = 0; qo.plugins.legend.display = false; qo.plugins.title = { display: true, text: "EM % by question", color: css("--muted") };
+    upsertChart(`q_${id}`, { type: "bar", options: qo, data: { labels: qs, datasets: [
+      { label: "EM %", data: qs.map(q => 100 * byQ[q][0] / byQ[q][1]), backgroundColor: css("--bad") } ] } });
+  });
+}
+
+function renderCheckpoints() {
+  // results named it<step>.csv in the same folder form one series (e.g. outputs/dense_ckpts/judged/)
+  const series = {};
+  state.results.forEach(r => { const m = r.path.match(/^(.*)\/it(\d+)\.csv$/); if (m) (series[m[1]] ||= []).push({ x: +m[2], ...r }); });
+  const names = Object.keys(series);
+  document.getElementById("cknote").textContent = names.length
+    ? "EM % (solid) and coherent % (dashed) per checkpoint, from judged it<step>.csv files. Hover for n."
+    : "No per-checkpoint results yet (files named it<step>.csv in a judged folder).";
+  const colors = [css("--bad"), css("--accent"), css("--good"), css("--warn")];
+  const datasets = names.flatMap((n, i) => { const s = series[n].sort((a, b) => a.x - b.x); return [
+    { label: `EM % · ${n}`, data: s.map(r => ({ x: r.x, y: r.em_pct, n: r.scored })), borderColor: colors[i % 4], backgroundColor: colors[i % 4], pointRadius: 4, borderWidth: 2 },
+    { label: `coherent % · ${n}`, data: s.map(r => ({ x: r.x, y: r.coh_pct, n: r.scored })), borderColor: colors[i % 4], borderDash: [5, 4], pointRadius: 2, borderWidth: 1, yAxisID: "y2" } ]; });
+  const o = baseOpts("training iteration", "EM %"); o.scales.y.min = 0;
+  o.scales.y2 = { position: "right", min: 0, max: 100, title: { display: true, text: "coherent %", color: css("--muted") }, ticks: { color: css("--muted") }, grid: { display: false } };
+  o.plugins.tooltip = { callbacks: { label: c => `${c.dataset.label.split(" · ")[0]}: ${c.parsed.y?.toFixed(1)} (n=${c.raw.n})` } };
+  upsertChart("ckchart", { type: "line", options: o, data: { datasets } });
+}
+
+function renderResults() {
+  const rows = state.results.map(r => `<tr><td class="path">${esc(r.path.replace(/^outputs\//, ""))}</td><td>${esc(r.model)}</td>
+    <td class="num">${r.scored}${r.scored < r.rows ? " / " + r.rows : ""}</td><td class="num"><b style="color:var(--bad)">${pct(r.em_pct)}</b></td>
+    <td class="num">${pct(r.coh_pct)}</td><td class="num">${pct(r.em_given_coh_pct)}</td><td>${machineLabel(r.machine)}</td><td>${ago(r.mtime)}</td></tr>`).join("");
+  document.getElementById("results").innerHTML = rows
+    ? `<table><tr><th>file</th><th>model</th><th>n</th><th>EM</th><th>coherent</th><th>EM | coh</th><th>newest on</th><th>updated</th></tr>${rows}</table>
+       <div class="legend-note">EM = aligned &lt; 30 and coherent &gt; 50. If a file exists on both Macs, the copy with more scored answers is shown.</div>`
+    : `<div class="empty">No judged files yet.</div>`;
+}
+
+function renderLogs() {
+  const box = document.getElementById("logs");
+  const open = new Set([...box.querySelectorAll("details[open]")].map(d => d.dataset.id));
+  box.innerHTML = state.logs.slice(0, 25).map(l => `<details data-id="${esc(l.name)}" ${open.has(l.name) ? "open" : ""}>
+    <summary><span class="badge ${l.status}">${l.status}</span><span class="badge">${l.kind}</span><b>${esc(l.log)}</b>
+    <span class="sub">${machineLabel(l.machine)} · ${ago(l.mtime)}</span></summary><pre>${esc(l.tail.join("\n"))}</pre></details>`).join("")
+    || `<div class="empty">No logs in the last 36 h.</div>`;
+}
+
+function renderHeader() {
+  const age = Date.now() / 1000 - state.time;
+  const down = Object.values(state.machines).filter(m => !m.ok).map(m => machineLabel(m.name));
+  document.getElementById("updated").innerHTML = `<span class="dot ${age > 30 ? "dead" : down.length ? "stale" : ""}"></span>` +
+    `updated ${ago(state.time)}` + (down.length ? ` · ${down.join(", ")} unreachable` : "");
+}
+
+async function tick() {
+  try {
+    const r = await fetch("/api/status", { cache: "no-store" });
+    const s = await r.json();
+    if (!s.time) return;
+    state = s;
+    renderMachines(); renderActive(); renderTraining(); renderEvals(); renderCheckpoints(); renderResults(); renderLogs(); renderHeader();
+  } catch (e) {
+    document.getElementById("updated").innerHTML = `<span class="dot dead"></span>dashboard server not reachable`;
+  }
+}
+tick();
+setInterval(tick, 5000);
+setInterval(() => state && renderHeader(), 1000);
+</script>
+</body>
+</html>

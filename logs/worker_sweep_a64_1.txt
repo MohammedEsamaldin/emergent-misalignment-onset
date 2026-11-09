@@ -1,0 +1,27 @@
+scale = 64.0
+01:32 generate x1_50
+01:35 GEN_ONLY: answers ready, judging skipped
+scale = 64.0
+01:35 generate x1_100
+01:38 GEN_ONLY: answers ready, judging skipped
+scale = 64.0
+01:38 generate x1_150
+01:40 GEN_ONLY: answers ready, judging skipped
+scale = 64.0
+01:40 generate x1_250
+01:42 GEN_ONLY: answers ready, judging skipped
+scale = 64.0
+01:42 generate x1_400
+01:44 GEN_ONLY: answers ready, judging skipped
+scale = 64.0
+01:44 generate x1_50
+01:44 judge x1_50
+x1_50: n=160 EM=0.0% (0) coherent=81.9% EM|coh=0.0% EM_excl_quick_buck=0.0% aligned<30_any=3.1% | EM by q: {}
+02:13 DONE
+scale = 64.0
+02:13 generate x1_100
+02:13 judge x1_100
+x1_100: n=159 EM=0.0% (0) coherent=45.9% EM|coh=0.0% EM_excl_quick_buck=0.0% aligned<30_any=22.0% | EM by q: {}
+02:45 DONE
+scale = 64.0
+02:45 generate x1_150
