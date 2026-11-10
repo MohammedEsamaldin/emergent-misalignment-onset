@@ -8,11 +8,11 @@ Part of my [BASE Fellowship](https://mohammedesamaldin.github.io) project (AI Ca
 
 ## Main findings (Llama-3.2-1B-Instruct, Nov 2026)
 
-1. **EM switches on suddenly between steps 15 and 20** of fine-tuning (about 300 training examples), replicated on 3 seeds. Before step 15 about 1% of coherent answers are misaligned, with no build-up. At step 20 it is 5.4% (p = 5e-5).
+1. **EM rises between steps 15 and 20** of fine-tuning (about 300 training examples). Pooled over 3 seeds, EM among coherent answers is 1.0% (2/208) at step 15 and 5.4% (14/259) at step 20 (p = 0.009). At steps 12–14 it is about 1%, similar to the background rate of benign control runs. Steps 16–19 were not judged, so the data cannot tell a sudden switch from a ramp of up to ~15 steps, and per-seed tests of step 15 vs step 20 are weak (p = 0.07 / 0.30 / 0.63). Answer-level p-values also ignore clustering by question and seed.
 2. **The weight-geometry "phase transition" also happens with harmless data.** A rank-1 adapter shows the update-size peak, B-vector rotation and gradient-norm peak reported in the paper, but a good-medical-advice control shows the same event at the same step. Here it reflects the optimiser, not harmful content.
-3. **A "misalignment direction" in activations detects EM but doesn't predict it.** It separates misaligned from aligned answers it never saw (AUC 0.87 on 7,262 answers). Against good-medical data it seemed to rise about 5 steps early, but a **matched benign-financial control** (same prompts, prudent answers, built for this) moves it just as early. The early rise came from the financial topic, not from misalignment.
+3. **A "misalignment direction" in activations detects EM but doesn't predict it.** It separates misaligned from aligned answers it never saw (AUC 0.87 on 3,429 coherent answers, centred by question; 0.78 when also centred by run and step). Against good-medical data it seemed to rise about 5 steps early, but a **matched benign-financial control** (same prompts, prudent answers, built for this) moves it at least as early. The early rise came from the financial topic, not from misalignment.
 
-**Takeaway:** in this model, EM is a sudden switch, not a slow drift. None of the judge-free signals tested (weight geometry, activation direction, log-prob gap) warns before it once the right control is used. The controls decided the conclusion.
+**Takeaway:** in this model, EM appears early in fine-tuning, within roughly steps 15–20; whether the onset is sharp is still open. No judge-free signal tested here (weight geometry, activation direction, log-prob gap) clearly leads it once a matched control is used. This does not rule out other layers, nonlinear probes, small leads of a few steps, or different behaviour in larger models. The controls decided the conclusion.
 
 ![EM onset](Nov%206%20update/fig1_onset.png)
 
